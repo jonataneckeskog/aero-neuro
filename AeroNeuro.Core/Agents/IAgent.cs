@@ -1,0 +1,17 @@
+namespace AeroNeuro.Core.Agents;
+
+/// <summary>
+/// Interface for an agent that can interact with an environment.
+/// </summary>
+public interface IAgent
+{
+    /// <summary>
+    /// Decide on actions based on observations.
+    /// </summary>
+    float[] Decide(float[] observations);
+
+    /// <summary>
+    /// Create a deep copy of the agent.
+    /// </summary>
+    IAgent Clone();
+}
