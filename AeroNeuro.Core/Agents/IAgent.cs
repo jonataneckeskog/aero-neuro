@@ -14,4 +14,9 @@ public interface IAgent
     /// Create a deep copy of the agent.
     /// </summary>
     IAgent Clone();
+
+    /// <summary>
+    /// Apply mutation to the agent's internal mutation system.
+    /// </summary>
+    void Mutate();
 }
