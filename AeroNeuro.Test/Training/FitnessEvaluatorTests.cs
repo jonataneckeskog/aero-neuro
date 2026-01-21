@@ -4,17 +4,17 @@ using AeroNeuro.Core.Environments;
 using AeroNeuro.Core.Training;
 using AeroNeuro.Test.Mocks;
 
-namespace AeroNeuro.Test;
+namespace AeroNeuro.Test.Training;
 
 public class FitnessEvaluatorTests
 {
     [Fact]
     public void Evaluate_ShouldReturnCorrectTotalReward()
     {
-        Mock<IEnvironment> mockEnv = MockEnvironment.Create(rewardToReturn: 10);
-        Mock<IAgent> mockAgent = MockAgent.Create();
+        Mock<IEnvironment<float>> mockEnv = MockEnvironment.Create(rewardToReturn: 10);
+        Mock<IAgent<float>> mockAgent = MockAgent.Create();
 
-        TrainingFitnessEvaluator evaluator = new TrainingFitnessEvaluator(mockEnv.Object, 10);
+        TrainingFitnessEvaluator<float> evaluator = new TrainingFitnessEvaluator<float>(mockEnv.Object, 10);
 
         float totalReward = evaluator.Evaluate(mockAgent.Object);
 
@@ -26,10 +26,10 @@ public class FitnessEvaluatorTests
     [Fact]
     public void Evaluate_ShouldStopWhenDone()
     {
-        Mock<IEnvironment> mockEnv = MockEnvironment.Create(rewardToReturn: 10, stepsUntilDone: 5);
-        Mock<IAgent> mockAgent = MockAgent.Create();
+        Mock<IEnvironment<float>> mockEnv = MockEnvironment.Create(rewardToReturn: 10, stepsUntilDone: 5);
+        Mock<IAgent<float>> mockAgent = MockAgent.Create();
 
-        TrainingFitnessEvaluator evaluator = new TrainingFitnessEvaluator(mockEnv.Object, 100);
+        TrainingFitnessEvaluator<float> evaluator = new TrainingFitnessEvaluator<float>(mockEnv.Object, 100);
 
         float totalReward = evaluator.Evaluate(mockAgent.Object);
 

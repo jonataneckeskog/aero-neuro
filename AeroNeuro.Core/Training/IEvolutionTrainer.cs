@@ -6,7 +6,7 @@ namespace AeroNeuro.Core.Training;
 /// Interface for an evolution trainer that manages a population of agents,
 /// evaluates them in an environment and selects the best performers.
 /// </summary>
-public interface IEvolutionTrainer
+public interface IEvolutionTrainer<T>
 {
     /// <summary>
     /// Run one generation of evolution.
@@ -17,7 +17,7 @@ public interface IEvolutionTrainer
     /// <summary>
     /// Get the current best agents in the population.
     /// </summary>
-    List<IAgent> GetBestAgents(int count);
+    List<IAgent<T>> GetBestAgents(int count);
 
     /// <summary>
     /// Get statistics about current generation.

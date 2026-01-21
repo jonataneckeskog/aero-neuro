@@ -4,26 +4,26 @@ using AeroNeuro.Core.Exceptions;
 
 namespace AeroNeuro.Core.Training;
 
-public class EvolutionTrainer : IEvolutionTrainer
+public class EvolutionTrainer<T> : IEvolutionTrainer<T>
 {
-    private readonly IAgentProvider _agentProvider;
-    private readonly IFitnessEvaluator _fitnessEvaluator;
-    private readonly IPopulationSelector _populationSelector;
+    private readonly IAgentProvider<T> _agentProvider;
+    private readonly IFitnessEvaluator<T> _fitnessEvaluator;
+    private readonly IPopulationSelector<T> _populationSelector;
     private readonly int _populationSize;
 
-    private List<(float Fitness, IAgent Agent)> _bestPopulation;
-    private List<IAgent> _population;
+    private List<(float Fitness, IAgent<T> Agent)> _bestPopulation;
+    private List<IAgent<T>> _population;
     private EvolutionStats _currentStats;
 
-    public EvolutionTrainer(IAgentProvider agentProvider, IFitnessEvaluator fitnessEvaluator, IPopulationSelector populationSelector, int populationSize = 100)
+    public EvolutionTrainer(IAgentProvider<T> agentProvider, IFitnessEvaluator<T> fitnessEvaluator, IPopulationSelector<T> populationSelector, int populationSize = 100)
     {
         _agentProvider = agentProvider;
         _fitnessEvaluator = fitnessEvaluator;
         _populationSelector = populationSelector;
         _populationSize = populationSize;
 
-        _bestPopulation = new List<(float, IAgent)>();
-        _population = new List<IAgent>();
+        _bestPopulation = new List<(float, IAgent<T>)>();
+        _population = new List<IAgent<T>>();
 
         // Initialize stats
         _currentStats = new EvolutionStats(0, 0, 0, 0, TimeSpan.Zero);
@@ -47,9 +47,9 @@ public class EvolutionTrainer : IEvolutionTrainer
         Stopwatch stopwatch = Stopwatch.StartNew();
 
         // Evaluate and sort population by fitness
-        List<(float Fitness, IAgent Agent)> rankedPopulation = new List<(float Fitness, IAgent Agent)>();
+        List<(float Fitness, IAgent<T> Agent)> rankedPopulation = new List<(float Fitness, IAgent<T> Agent)>();
 
-        foreach (IAgent agent in _population)
+        foreach (IAgent<T> agent in _population)
         {
             float fitness = _fitnessEvaluator.Evaluate(agent);
             rankedPopulation.Add((fitness, agent));
@@ -62,8 +62,8 @@ public class EvolutionTrainer : IEvolutionTrainer
         double averageFitness = _bestPopulation.Average(x => x.Fitness);
 
         // Create next generation
-        List<IAgent> elites = _populationSelector.SelectPopulation(_bestPopulation);
-        List<IAgent> nextGeneration = new List<IAgent>();
+        List<IAgent<T>> elites = _populationSelector.SelectPopulation(_bestPopulation);
+        List<IAgent<T>> nextGeneration = new List<IAgent<T>>();
 
         if (elites.Count == 0)
         {
@@ -76,8 +76,8 @@ public class EvolutionTrainer : IEvolutionTrainer
         // Fill the rest of the population with mutants
         while (nextGeneration.Count < _populationSize)
         {
-            IAgent parent = elites[nextGeneration.Count % elites.Count];
-            IAgent child = parent.Clone();
+            IAgent<T> parent = elites[nextGeneration.Count % elites.Count];
+            IAgent<T> child = parent.Clone();
             child.Mutate();
 
             nextGeneration.Add(child);
@@ -97,7 +97,7 @@ public class EvolutionTrainer : IEvolutionTrainer
     }
 
     /// <inheritdoc/>
-    public List<IAgent> GetBestAgents(int count)
+    public List<IAgent<T>> GetBestAgents(int count)
     {
         return _bestPopulation
             .Take(count)

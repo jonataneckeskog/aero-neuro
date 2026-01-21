@@ -5,9 +5,9 @@ namespace AeroNeuro.Test.Mocks;
 
 public static class MockAgent
 {
-    public static Mock<IAgent> Create()
+    public static Mock<IAgent<float>> Create()
     {
-        Mock<IAgent> mock = new Mock<IAgent>();
+        Mock<IAgent<float>> mock = new Mock<IAgent<float>>();
 
         mock.Setup(agent => agent.Decide(It.IsAny<float[]>()))
             .Returns([]);
@@ -17,7 +17,7 @@ public static class MockAgent
         return mock;
     }
 
-    public static List<IAgent> CreateList(int count)
+    public static List<IAgent<float>> CreateList(int count)
     {
         return Enumerable.Range(0, count)
             .Select(_ => Create().Object)

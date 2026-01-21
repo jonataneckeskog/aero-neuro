@@ -2,7 +2,7 @@ using AeroNeuro.Core.Agents;
 
 namespace AeroNeuro.Core.Training;
 
-public class TopFractionPopulationSelector : IPopulationSelector
+public class TopFractionPopulationSelector<T> : IPopulationSelector<T>
 {
     private readonly float _eliteFraction;
 
@@ -17,7 +17,7 @@ public class TopFractionPopulationSelector : IPopulationSelector
     }
 
     /// <inheritdoc/>
-    public List<IAgent> SelectPopulation(List<(float Fitness, IAgent Agent)> evaluatedPopulation)
+    public List<IAgent<T>> SelectPopulation(List<(float Fitness, IAgent<T> Agent)> evaluatedPopulation)
     {
         int eliteCount = (int)(evaluatedPopulation.Count * _eliteFraction);
 

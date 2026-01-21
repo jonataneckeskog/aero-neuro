@@ -5,10 +5,10 @@ namespace AeroNeuro.Core.Training;
 /// <summary>
 /// Interface for evaluating the fitness of agents. Higher fitness indicates better performance.
 /// </summary>
-public interface IFitnessEvaluator
+public interface IFitnessEvaluator<T>
 {
     /// <summary>
     /// Evaluate fitness of an agent. Higher = better.
     /// </summary>
-    float Evaluate(IAgent agent);
+    float Evaluate(IAgent<T> agent);
 }
