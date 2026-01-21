@@ -40,6 +40,7 @@ public class EvolutionTrainer : IEvolutionTrainer
         _bestPopulation = _population.Select(a => (0f, a)).ToList();
     }
 
+    /// <inheritdoc/>
     public void EvolveGeneration()
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
@@ -92,6 +93,7 @@ public class EvolutionTrainer : IEvolutionTrainer
             stopwatch.Elapsed);
     }
 
+    /// <inheritdoc/>
     public List<IAgent> GetBestAgents(int count)
     {
         return _bestPopulation
@@ -100,6 +102,7 @@ public class EvolutionTrainer : IEvolutionTrainer
             .ToList();
     }
 
+    /// <inheritdoc/>
     public EvolutionStats GetStats()
     {
         return _currentStats;
