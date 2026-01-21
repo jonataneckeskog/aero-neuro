@@ -1,6 +1,6 @@
 namespace AeroNeuro.Core.Agents;
 
-public class DoubleNetworkAgent : IAgent
+public class DoubleNetworkAgent : IAgent<byte>
 {
     private readonly int _input;
     private readonly int _output;
@@ -25,17 +25,16 @@ public class DoubleNetworkAgent : IAgent
     }
 
     /// <inheritdoc/>
-    public float[] Decide(float[] observations)
+    public byte[] Decide(byte[] observations)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public IAgent Clone()
+    public IAgent<byte> Clone()
     {
         return new DoubleNetworkAgent(_input, _output,
-                                     (float[])_innerLayer.Clone(),
-                                     (float[])_outerLayer.Clone());
+                (float[])_innerLayer.Clone(), (float[])_outerLayer.Clone());
     }
 
     /// <inheritdoc/>
