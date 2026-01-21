@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using AeroNeuro.Core.Agents;
+using AeroNeuro.Core.Exceptions;
 
 namespace AeroNeuro.Core.Training;
 
@@ -64,11 +65,13 @@ public class EvolutionTrainer : IEvolutionTrainer
         List<IAgent> elites = _populationSelector.SelectPopulation(_bestPopulation);
         List<IAgent> nextGeneration = new List<IAgent>();
 
-        // Add elites to next generation
-        foreach (IAgent elite in elites)
+        if (elites.Count == 0)
         {
-            nextGeneration.Add(elite.Clone());
+            throw EvolutionException.EmptySelection();
         }
+
+        // Add elites to next generation
+        nextGeneration.AddRange(elites);
 
         // Fill the rest of the population with mutants
         while (nextGeneration.Count < _populationSize)
