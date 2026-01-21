@@ -5,23 +5,26 @@ public class DoubleNetworkAgent : IAgent<byte>
     private readonly int _input;
     private readonly int _output;
 
-    private float[] _innerLayer;
-    private float[] _outerLayer;
+    private ushort[] _program;
+    private ushort[] _genome;
+    private byte[] _memory;
 
-    public DoubleNetworkAgent(int input, int output, int innerCount = 50, int outerCount = 20)
+    public DoubleNetworkAgent(int input, int output, int NetworkSize = 32, int MemorySize = 64)
     {
         _input = input;
         _output = output;
-        _innerLayer = new float[innerCount];
-        _outerLayer = new float[outerCount];
+        _program = new ushort[NetworkSize];
+        _genome = new ushort[NetworkSize];
+        _memory = new byte[MemorySize];
     }
 
-    private DoubleNetworkAgent(int input, int output, float[] inner, float[] outer)
+    private DoubleNetworkAgent(int input, int output, ushort[] program, ushort[] genome, int memorySize)
     {
         _input = input;
         _output = output;
-        _innerLayer = inner;
-        _outerLayer = outer;
+        _program = program;
+        _genome = genome;
+        _memory = new byte[memorySize];
     }
 
     /// <inheritdoc/>
@@ -34,7 +37,7 @@ public class DoubleNetworkAgent : IAgent<byte>
     public IAgent<byte> Clone()
     {
         return new DoubleNetworkAgent(_input, _output,
-                (float[])_innerLayer.Clone(), (float[])_outerLayer.Clone());
+                (ushort[])_program.Clone(), (ushort[])_genome.Clone(), _memory.Length);
     }
 
     /// <inheritdoc/>
