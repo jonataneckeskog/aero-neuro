@@ -3,12 +3,14 @@ using AeroNeuro.Core.Agents;
 
 namespace AeroNeuro.Test.Mocks;
 
-public class MockAgent : Mock<IAgent>
+public static class MockAgent
 {
-    public MockAgent()
+    public static Mock<IAgent> Create()
     {
+        Mock<IAgent> mock = new Mock<IAgent>();
         // Setup default decision to avoid nulls
-        Setup(x => x.Decide(It.IsAny<float[]>()))
+        mock.Setup(x => x.Decide(It.IsAny<float[]>()))
             .Returns([]);
+        return mock;
     }
 }
