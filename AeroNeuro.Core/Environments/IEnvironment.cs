@@ -5,7 +5,7 @@ namespace AeroNeuro.Core.Environments;
 /// simulation or real-world setup, a game, or any scenario where agents perceive 
 /// observations and take actions to achieve goals.
 /// </summary>
-public interface IEnvironment
+public interface IEnvironment<T>
 {
     /// <summary>
     /// Size of the observation vector provided to agents.
@@ -20,13 +20,13 @@ public interface IEnvironment
     /// <summary>
     /// Get the current observation from the environment.
     /// </summary>
-    float[] GetObservation();
+    T[] GetObservation();
 
     /// <summary>
     /// Apply the given actions to the environment and advance its state.
     /// Returns the reward obtained after taking the actions.
     /// </summary>
-    float Step(float[] actions);
+    float Step(T[] actions);
 
     /// <summary>
     /// Indicates whether the current episode has ended.

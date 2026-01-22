@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AeroNeuro.Core", "AeroNeuro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AeroNeuro.Test", "AeroNeuro.Test\AeroNeuro.Test.csproj", "{80B43334-9CCA-4186-84CA-CCD47AECA094}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AeroNeuro.App", "AeroNeuro.App\AeroNeuro.App.csproj", "{E885E94E-7B4F-4F35-A3ED-9B3DE4A82B9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{80B43334-9CCA-4186-84CA-CCD47AECA094}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80B43334-9CCA-4186-84CA-CCD47AECA094}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80B43334-9CCA-4186-84CA-CCD47AECA094}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E885E94E-7B4F-4F35-A3ED-9B3DE4A82B9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E885E94E-7B4F-4F35-A3ED-9B3DE4A82B9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E885E94E-7B4F-4F35-A3ED-9B3DE4A82B9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E885E94E-7B4F-4F35-A3ED-9B3DE4A82B9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
