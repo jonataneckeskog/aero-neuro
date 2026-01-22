@@ -12,7 +12,7 @@ var outputExtractor = new OutputExtractor(environment.ActionSize);
 var programExecutor = new BasicProgramExecutor();
 
 var agentProvider = new GenomeAgentProvider(environment, mutationStrategy, outputExtractor, programExecutor, networkSize: 128, memorySize: 64);
-var fitnessEvaluator = new TrainingFitnessEvaluator<byte>(environment, 10000, 10);
+var fitnessEvaluator = new TrainingFitnessEvaluator<byte>(environment, 1000, 100);
 var populationSelector = new TopFractionPopulationSelector<byte>(0.1f);
 var agentPersistence = new GenomeAgentPersistence(mutationStrategy, outputExtractor, programExecutor);
 var statsDisplayer = new StatsDisplayer();
@@ -22,7 +22,15 @@ var builder = new AeroNeuroBuilder<byte>()
     .WithAgentProvider(agentProvider)
     .WithFitnessEvaluator(fitnessEvaluator)
     .WithPopulationSelector(populationSelector)
-    .WithAgentPersistence(agentPersistence)
+    .WithConditionalAction(stats => stats.Generation % 50 == 0, (IEvolutionTrainer<byte> trainer) =>
+    {
+        var bestAgent = trainer.GetBestAgents(1).FirstOrDefault();
+        if (bestAgent != null)
+        {
+            agentPersistence.SaveAgent(AgentSavePath, bestAgent);
+        }
+    })
+    .WithConditionalAction(stats => stats.Generation % 50 == 0, (IEnvironment<byte> env) => { if (env is EscapeRoomEnvironment e) e.PrintBoard(); })
     .WithStatsDisplayer(statsDisplayer)
     .WithPopulationSize(50)
     .WithMaxStepsPerEpisode(100);
@@ -30,5 +38,5 @@ var builder = new AeroNeuroBuilder<byte>()
 var trainingSession = builder.Build();
 
 Console.WriteLine("Starting training...");
-trainingSession.Run(10000);
+trainingSession.Run(1000);
 Console.WriteLine("Training finished.");
