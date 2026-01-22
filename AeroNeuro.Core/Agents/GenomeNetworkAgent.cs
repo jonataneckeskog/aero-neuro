@@ -2,7 +2,7 @@ using AeroNeuro.Core.Execution;
 
 namespace AeroNeuro.Core.Agents;
 
-public class DoubleNetworkAgent : IAgent<byte>
+public class GenomeNetworkAgent : IAgent<byte>
 {
     IMutationStrategy<ushort[]> _mutationStrategy;
     IOutputExtractor<byte, byte[]> _outputExtractor;
@@ -14,7 +14,7 @@ public class DoubleNetworkAgent : IAgent<byte>
     private ushort[] _genome;
     private byte[] _workingMemory;
 
-    public DoubleNetworkAgent(IMutationStrategy<ushort[]> mutationStrategy,
+    public GenomeNetworkAgent(IMutationStrategy<ushort[]> mutationStrategy,
             IOutputExtractor<byte, byte[]> outputExtractor,
             IProgramExecutor<byte, ushort[]> programExecutor,
             int inputSize, int networkSize = 32, int memorySize = 64)
@@ -29,7 +29,7 @@ public class DoubleNetworkAgent : IAgent<byte>
         _workingMemory = new byte[_memorySize];
     }
 
-    private DoubleNetworkAgent(IMutationStrategy<ushort[]> mutationStrategy,
+    private GenomeNetworkAgent(IMutationStrategy<ushort[]> mutationStrategy,
             IOutputExtractor<byte, byte[]> outputExtractor,
             IProgramExecutor<byte, ushort[]> programExecutor,
             int inputSize, ushort[] program, ushort[] genome, int memorySize)
@@ -62,7 +62,7 @@ public class DoubleNetworkAgent : IAgent<byte>
     /// <inheritdoc/>
     public IAgent<byte> Clone()
     {
-        return new DoubleNetworkAgent(_mutationStrategy, _outputExtractor, _programExecutor, _inputSize,
+        return new GenomeNetworkAgent(_mutationStrategy, _outputExtractor, _programExecutor, _inputSize,
                 (ushort[])_program.Clone(), (ushort[])_genome.Clone(), _memorySize);
     }
 
