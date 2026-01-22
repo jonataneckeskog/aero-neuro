@@ -35,7 +35,7 @@ public class EvolutionTrainer<T> : IEvolutionTrainer<T>
     {
         for (int i = 0; i < _populationSize; i++)
         {
-            _population.Add(_agentProvider.CreateRandomAgent(10, 100));
+            _population.Add(_agentProvider.CreateBaseAgent());
         }
 
         _bestPopulation = _population.Select(a => (0f, a)).ToList();
