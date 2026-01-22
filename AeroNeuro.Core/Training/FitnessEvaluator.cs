@@ -9,14 +9,14 @@ namespace AeroNeuro.Core.Training;
 public class TrainingFitnessEvaluator<T> : IFitnessEvaluator<T>
 {
     private readonly IEnvironment<T> _environment;
-    private readonly int _maxSteps;
     private readonly int _episodes;
+    private readonly int _maxSteps;
 
-    public TrainingFitnessEvaluator(IEnvironment<T> environment, int maxSteps, int episodes = 1)
+    public TrainingFitnessEvaluator(IEnvironment<T> environment, int episodes, int maxSteps)
     {
         _environment = environment;
-        _maxSteps = maxSteps;
         _episodes = episodes;
+        _maxSteps = maxSteps;
     }
 
     /// <inheritdoc/>
