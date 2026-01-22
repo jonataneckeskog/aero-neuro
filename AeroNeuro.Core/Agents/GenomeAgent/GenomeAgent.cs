@@ -35,7 +35,7 @@ public class GenomeAgent : IAgent<byte>
         _mutationStrategy = mutationStrategy;
         _outputExtractor = outputExtractor;
         _programExecutor = programExecutor;
-        _program = (ushort[])agentData.Program.Clone();
+        _program = (ushort[])agentData.Genome.Clone();
         _genome = (ushort[])agentData.Genome.Clone();
         _inputSize = agentData.InputSize;
         _memorySize = agentData.MemorySize;
@@ -91,7 +91,6 @@ public class GenomeAgent : IAgent<byte>
     {
         return new GenomeAgentData
         {
-            Program = (ushort[])_program.Clone(),
             Genome = (ushort[])_genome.Clone(),
             InputSize = _inputSize,
             MemorySize = _memorySize,
