@@ -21,7 +21,7 @@ public struct SimpleBitOpsInstruction
     // =========================================================
 
     // Bits 15-13: The OpCode
-    public SimpleBitOps Op => (SimpleBitOps)((Raw >> 13) & 0b111);
+    public SimpleOpCode Op => (SimpleOpCode)((Raw >> 13) & 0b111);
 
     // =========================================================
     // 2. MATH & LOGIC VIEW (ADD, XOR, SHIFT)

@@ -12,6 +12,7 @@ public class DoubleNetworkAgent : IAgent<byte>
     private int _memorySize;
     private ushort[] _program;
     private ushort[] _genome;
+    private byte[] _workingMemory;
 
     public DoubleNetworkAgent(IMutationStrategy<ushort[]> mutationStrategy,
             IOutputExtractor<byte, byte[]> outputExtractor,
@@ -25,6 +26,7 @@ public class DoubleNetworkAgent : IAgent<byte>
         _genome = new ushort[networkSize];
         _inputSize = inputSize;
         _memorySize = memorySize >= inputSize ? memorySize : inputSize;
+        _workingMemory = new byte[_memorySize];
     }
 
     private DoubleNetworkAgent(IMutationStrategy<ushort[]> mutationStrategy,
@@ -39,21 +41,22 @@ public class DoubleNetworkAgent : IAgent<byte>
         _genome = genome;
         _inputSize = inputSize;
         _memorySize = memorySize;
+        _workingMemory = new byte[_memorySize];
     }
 
     /// <inheritdoc/>
     public byte[] Decide(byte[] observations)
     {
         // Initialize and load memory
-        byte[] memory = new byte[_memorySize];
+        Array.Clear(_workingMemory, 0, _workingMemory.Length);
         int bytesToCopy = Math.Min(observations.Length, _memorySize);
-        Array.Copy(observations, 0, memory, 0, bytesToCopy);
+        Array.Copy(observations, 0, _workingMemory, 0, bytesToCopy);
 
         // Execute program
-        _programExecutor.Execute(memory, _program);
+        _programExecutor.Execute(_workingMemory, _program);
 
         // Generate output
-        return _outputExtractor.ExtractOutput(memory);
+        return _outputExtractor.ExtractOutput(_workingMemory);
     }
 
     /// <inheritdoc/>
@@ -67,5 +70,6 @@ public class DoubleNetworkAgent : IAgent<byte>
     public void Mutate()
     {
         _mutationStrategy.Mutate(_genome);
+        Array.Copy(_genome, _program, _genome.Length);
     }
 }
