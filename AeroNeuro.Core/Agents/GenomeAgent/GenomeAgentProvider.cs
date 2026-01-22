@@ -1,5 +1,6 @@
 using AeroNeuro.Core.Environments;
 using AeroNeuro.Common;
+using System.Numerics;
 
 namespace AeroNeuro.Core.Agents.GenomeAgent;
 
@@ -11,13 +12,13 @@ public class GenomeAgentProvider : IAgentProvider<byte>
     private readonly IProgramExecutor<byte, ushort[]> _programExecutor;
     private readonly int _networkSize;
     private readonly int _memorySize;
-
+    private readonly int _maxNetworkSize;
 
     public GenomeAgentProvider(IEnvironment<byte> environment,
         IMutationStrategy<ushort[]> mutationStrategy,
         IOutputExtractor<byte, byte[]> outputExtractor,
         IProgramExecutor<byte, ushort[]> programExecutor,
-        int networkSize = 32, int memorySize = 32)
+        int maxNetworkSize, int networkSize = 32, int memorySize = 32)
     {
         _environment = environment;
         _mutationStrategy = mutationStrategy;
@@ -25,6 +26,7 @@ public class GenomeAgentProvider : IAgentProvider<byte>
         _programExecutor = programExecutor;
         _networkSize = networkSize;
         _memorySize = memorySize;
+        _maxNetworkSize = maxNetworkSize;
     }
 
     /// <inheritdoc/>
@@ -36,7 +38,9 @@ public class GenomeAgentProvider : IAgentProvider<byte>
             _programExecutor,
             _environment.ObservationSize,
             _networkSize,
-            _memorySize);
+            _memorySize,
+            _maxNetworkSize
+            );
     }
 
     /// <inheritdoc/>
@@ -50,7 +54,9 @@ public class GenomeAgentProvider : IAgentProvider<byte>
             _programExecutor,
             _environment.ObservationSize,
             networkSize: networkSize,
-            memorySize: Math.Max(networkSize, _environment.ObservationSize));
+            memorySize: (int)BitOperations.RoundUpToPowerOf2((uint)Math.Max(networkSize, _environment.ObservationSize)),
+            maxNetworkSize: _maxNetworkSize
+            );
 
         agent.Mutate();
 

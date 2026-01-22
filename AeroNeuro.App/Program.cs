@@ -11,11 +11,11 @@ var mutationStrategy = new BasicMutationStrategy();
 var outputExtractor = new OutputExtractor(environment.ActionSize);
 var programExecutor = new BasicProgramExecutor();
 
-var agentProvider = new GenomeAgentProvider(environment, mutationStrategy, outputExtractor, programExecutor, networkSize: 32, memorySize: 64);
+var agentProvider = new GenomeAgentProvider(environment, mutationStrategy, outputExtractor, programExecutor, 128, networkSize: 32, memorySize: 64);
 var fitnessEvaluator = new TrainingFitnessEvaluator<byte>(environment, 100, 100);
 var populationSelector = new TopFractionPopulationSelector<byte>(0.1f);
 var agentPersistence = new GenomeAgentPersistence(mutationStrategy, outputExtractor, programExecutor);
-var statsDisplayer = new StatsDisplayer();
+var statsDisplayer = new StatsDisplayer(Console.WriteLine);
 
 var builder = new AeroNeuroBuilder<byte>()
     .WithEnvironment(environment)

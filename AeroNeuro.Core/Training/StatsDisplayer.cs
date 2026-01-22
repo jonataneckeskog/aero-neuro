@@ -2,9 +2,16 @@ namespace AeroNeuro.Core.Training;
 
 public class StatsDisplayer : IStatsDisplayer
 {
+    private readonly Action<EvolutionStats> _displayStrategy;
+
+    public StatsDisplayer(Action<EvolutionStats> displayStrategy)
+    {
+        _displayStrategy = displayStrategy;
+    }
+
     /// <inheritdoc/>
     public void DisplayStats(EvolutionStats stats)
     {
-        Console.WriteLine($"Generation: {stats.Generation}, Best Fitness: {stats.BestFitness}, Average Fitness: {stats.AverageFitness}");
+        _displayStrategy(stats);
     }
 }
