@@ -15,7 +15,7 @@ public class AeroNeuroBuilder<T>
     private IFitnessEvaluator<T>? _fitnessEvaluator;
     private IStatsDisplayer? _statsDisplayer;
     private int _populationSize = 100;
-    private float _maxStepsPerEpisode = 1000f;
+    private int _maxStepsPerEpisode = 1000;
     private readonly List<ITrainingSessionHook<T>> _hooks = new();
 
     /// <summary>
@@ -37,7 +37,7 @@ public class AeroNeuroBuilder<T>
     }
 
     /// <summary>
-    /// Sets the population selector. Defaults to TopFractionPopulationSelector(0.2).
+    /// Sets the population selector. Defaults to null.
     /// </summary>
     public AeroNeuroBuilder<T> WithPopulationSelector(IPopulationSelector<T> selector)
     {
@@ -117,7 +117,7 @@ public class AeroNeuroBuilder<T>
     /// <summary>
     /// Sets the maximum steps per episode for the default fitness evaluator. Default is 1000.
     /// </summary>
-    public AeroNeuroBuilder<T> WithMaxStepsPerEpisode(float steps)
+    public AeroNeuroBuilder<T> WithMaxStepsPerEpisode(int steps)
     {
         _maxStepsPerEpisode = steps;
         return this;
