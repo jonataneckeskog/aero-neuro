@@ -5,7 +5,7 @@ namespace AeroNeuro.Core.Agents;
 /// Bits [15-13]: OpCode (3 bits) -> Maps to the Enum below.
 /// Bits [12-00]: Payload (13 bits) -> Usage depends on the OpCode.
 /// </summary>
-public enum OpCode : byte
+public enum SimpleBitOps : byte
 {
     // ========================================================================
     // TYPE A: MATH & LOGIC

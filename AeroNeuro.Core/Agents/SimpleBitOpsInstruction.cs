@@ -4,7 +4,7 @@ namespace AeroNeuro.Core.Agents;
 /// A 16-bit instruction represented with bit fields for easy access.
 /// </summary>
 [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
-public struct Instruction
+public struct SimpleBitOpsInstruction
 {
     // The raw primitive data. Everything else is just a "view" of this number.
     [System.Runtime.InteropServices.FieldOffset(0)]
@@ -21,7 +21,7 @@ public struct Instruction
     // =========================================================
 
     // Bits 15-13: The OpCode
-    public OpCode Op => (OpCode)((Raw >> 13) & 0b111);
+    public SimpleBitOps Op => (SimpleBitOps)((Raw >> 13) & 0b111);
 
     // =========================================================
     // 2. MATH & LOGIC VIEW (ADD, XOR, SHIFT)
