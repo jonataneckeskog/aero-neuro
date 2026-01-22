@@ -1,8 +1,6 @@
-using AeroNeuro.Core.Execution;
+namespace AeroNeuro.Core.Agents.GenomeAgent;
 
-namespace AeroNeuro.Core.Agents;
-
-public class GenomeNetworkAgent : IAgent<byte>
+public class GenomeAgent : IAgent<byte>
 {
     IMutationStrategy<ushort[]> _mutationStrategy;
     IOutputExtractor<byte, byte[]> _outputExtractor;
@@ -14,7 +12,7 @@ public class GenomeNetworkAgent : IAgent<byte>
     private ushort[] _genome;
     private byte[] _workingMemory;
 
-    public GenomeNetworkAgent(IMutationStrategy<ushort[]> mutationStrategy,
+    public GenomeAgent(IMutationStrategy<ushort[]> mutationStrategy,
             IOutputExtractor<byte, byte[]> outputExtractor,
             IProgramExecutor<byte, ushort[]> programExecutor,
             int inputSize, int networkSize = 32, int memorySize = 64)
@@ -29,7 +27,22 @@ public class GenomeNetworkAgent : IAgent<byte>
         _workingMemory = new byte[_memorySize];
     }
 
-    private GenomeNetworkAgent(IMutationStrategy<ushort[]> mutationStrategy,
+    public GenomeAgent(IMutationStrategy<ushort[]> mutationStrategy,
+        IOutputExtractor<byte, byte[]> outputExtractor,
+        IProgramExecutor<byte, ushort[]> programExecutor,
+        GenomeAgentData agentData)
+    {
+        _mutationStrategy = mutationStrategy;
+        _outputExtractor = outputExtractor;
+        _programExecutor = programExecutor;
+        _program = (ushort[])agentData.Program.Clone();
+        _genome = (ushort[])agentData.Genome.Clone();
+        _inputSize = agentData.InputSize;
+        _memorySize = agentData.MemorySize;
+        _workingMemory = new byte[_memorySize];
+    }
+
+    private GenomeAgent(IMutationStrategy<ushort[]> mutationStrategy,
             IOutputExtractor<byte, byte[]> outputExtractor,
             IProgramExecutor<byte, ushort[]> programExecutor,
             int inputSize, ushort[] program, ushort[] genome, int memorySize)
@@ -62,7 +75,7 @@ public class GenomeNetworkAgent : IAgent<byte>
     /// <inheritdoc/>
     public IAgent<byte> Clone()
     {
-        return new GenomeNetworkAgent(_mutationStrategy, _outputExtractor, _programExecutor, _inputSize,
+        return new GenomeAgent(_mutationStrategy, _outputExtractor, _programExecutor, _inputSize,
                 (ushort[])_program.Clone(), (ushort[])_genome.Clone(), _memorySize);
     }
 
@@ -71,5 +84,18 @@ public class GenomeNetworkAgent : IAgent<byte>
     {
         _mutationStrategy.Mutate(_genome);
         Array.Copy(_genome, _program, _genome.Length);
+    }
+
+    /// <inheritdoc/>
+    public AgentData GetAgentData()
+    {
+        return new GenomeAgentData
+        {
+            Program = (ushort[])_program.Clone(),
+            Genome = (ushort[])_genome.Clone(),
+            InputSize = _inputSize,
+            MemorySize = _memorySize,
+            NetworkSize = _program.Length
+        };
     }
 }

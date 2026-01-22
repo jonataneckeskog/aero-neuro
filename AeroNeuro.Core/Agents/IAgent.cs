@@ -19,4 +19,9 @@ public interface IAgent<T>
     /// Apply mutation to the agent's internal mutation system.
     /// </summary>
     void Mutate();
+
+    /// <summary>
+    /// Get the agent's data representation.
+    /// </summary>
+    AgentData GetAgentData();
 }
