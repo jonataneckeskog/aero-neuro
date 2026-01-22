@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using AeroNeuro.Core.Agents;
 using AeroNeuro.Core.Environments;
 
@@ -36,9 +37,9 @@ public class TrainingFitnessEvaluator<T> : IFitnessEvaluator<T>
                 episodeReward += _environment.Step(actions);
                 i++;
             }
-            totalFitness += episodeReward;
+            totalFitness += episodeReward * (e + 1);
         }
 
-        return totalFitness / _episodes;
+        return totalFitness;
     }
 }
