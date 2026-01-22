@@ -9,27 +9,36 @@ namespace AeroNeuro.Core.Training;
 public class TrainingFitnessEvaluator<T> : IFitnessEvaluator<T>
 {
     private readonly IEnvironment<T> _environment;
-    private readonly float _repetitions;
+    private readonly int _maxSteps;
+    private readonly int _episodes;
 
-    public TrainingFitnessEvaluator(IEnvironment<T> environment, float repetitions)
+    public TrainingFitnessEvaluator(IEnvironment<T> environment, int maxSteps, int episodes = 1)
     {
         _environment = environment;
-        _repetitions = repetitions;
+        _maxSteps = maxSteps;
+        _episodes = episodes;
     }
 
     /// <inheritdoc/>
     public float Evaluate(IAgent<T> agent)
     {
-        _environment.Reset();
-        float totalReward = 0;
-        int i = 0;
-        while (!_environment.IsDone && i < _repetitions)
+        float totalFitness = 0;
+
+        for (int e = 0; e < _episodes; e++)
         {
-            T[] observation = _environment.GetObservation();
-            T[] actions = agent.Decide(observation);
-            totalReward += _environment.Step(actions);
-            i++;
+            _environment.Reset();
+            float episodeReward = 0;
+            int i = 0;
+            while (!_environment.IsDone && i < _maxSteps)
+            {
+                T[] observation = _environment.GetObservation();
+                T[] actions = agent.Decide(observation);
+                episodeReward += _environment.Step(actions);
+                i++;
+            }
+            totalFitness += episodeReward;
         }
-        return totalReward;
+
+        return totalFitness / _episodes;
     }
 }

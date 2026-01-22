@@ -15,7 +15,7 @@ public class GenomeAgent : IAgent<byte>
     public GenomeAgent(IMutationStrategy<ushort[]> mutationStrategy,
             IOutputExtractor<byte, byte[]> outputExtractor,
             IProgramExecutor<byte, ushort[]> programExecutor,
-            int inputSize, int networkSize = 32, int memorySize = 64)
+            int inputSize, int networkSize, int memorySize)
     {
         _mutationStrategy = mutationStrategy;
         _programExecutor = programExecutor;
