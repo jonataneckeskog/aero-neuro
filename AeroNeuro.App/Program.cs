@@ -7,14 +7,15 @@ using System.Globalization;
 using PolylineSimplifier;
 
 const string AgentSavePath = "best_agent.json";
+const string DataOutputPath = "byte_training_output.txt";
 
-var environment = new EscapeRoomEnvironment();
+var environment = new ByteTrainingEnvironment("training_data.txt", contextWindowSize: 16, stepsPerEpisode: 20);
 var mutationStrategy = new BasicMutationStrategy();
 var outputExtractor = new OutputExtractor(environment.ActionSize);
 var programExecutor = new BasicProgramExecutor();
 
-var agentProvider = new GenomeAgentProvider(environment, mutationStrategy, outputExtractor, programExecutor, 128, networkSize: 32, memorySize: 32);
-var fitnessEvaluator = new TrainingFitnessEvaluator<byte>(environment, 20, 1000);
+var agentProvider = new GenomeAgentProvider(environment, mutationStrategy, outputExtractor, programExecutor, 128, networkSize: 128, memorySize: 256);
+var fitnessEvaluator = new TrainingFitnessEvaluator<byte>(environment, 10, 5000);
 var populationSelector = new TopFractionPopulationSelector<byte>(0.2f);
 var agentPersistence = new GenomeAgentPersistence(mutationStrategy, outputExtractor, programExecutor);
 var statsDisplayer = new StatsDisplayer(stats =>
@@ -24,6 +25,8 @@ var statsDisplayer = new StatsDisplayer(stats =>
     string csvLine = $"{stats.Generation},{stats.BestFitness},{stats.AverageFitness}{Environment.NewLine}";
     File.AppendAllText("training_stats.csv", csvLine);
 });
+
+var displayerHook = new EnvironmentDisplayerHook(DataOutputPath);
 
 var builder = new AeroNeuroBuilder<byte>()
     .WithEnvironment(environment)
@@ -38,13 +41,14 @@ var builder = new AeroNeuroBuilder<byte>()
             agentPersistence.SaveAgent(AgentSavePath, bestAgent);
         }
     })
+    .WithConditionalAction(stats => (stats.Generation + 1) % 100 == 0, displayerHook.DisplayEnvironment)
     .WithStatsDisplayer(statsDisplayer)
     .WithPopulationSize(20);
 
 var trainingSession = builder.Build();
 
 Console.WriteLine("Starting training...");
-trainingSession.Run(10000);
+trainingSession.Run(5000);
 Console.WriteLine("Training finished.");
 
 
@@ -96,3 +100,39 @@ Console.WriteLine($"Saved to: training_stats_optimized.csv");
 // A simple container to hold the parsed numeric data for the algorithm 
 // and the original string for the file output.
 public record StatsPoint(float Generation, float BestFitness, string OriginalLine);
+
+/// <summary>
+/// Custom environment displayer that logs environment state to a file.
+/// </summary>
+public class EnvironmentDisplayerHook : IEnvironmentDisplayer<byte>
+{
+    private readonly string _filePath;
+
+    public EnvironmentDisplayerHook(string filePath)
+    {
+        _filePath = filePath;
+    }
+
+    public void DisplayEnvironment(IEnvironment<byte> environment)
+    {
+        // 1. Reset to move the cursor to a fresh chunk of data
+        environment.Reset();
+
+        // 2. Get the raw bytes
+        var observation = environment.GetObservation();
+
+        // 3. Convert bytes to String
+        // Using UTF8 is standard for .txt files. 
+        string textSnippet = System.Text.Encoding.UTF8.GetString(observation);
+
+        // 4. Sanitize for the log file (replace newlines with spaces so it stays on one line)
+        string printable = textSnippet.Replace("\r", "").Replace("\n", "[\\n]");
+
+        var logEntry = $"[Gen Observation] \"{printable}\"{Environment.NewLine}";
+
+        File.AppendAllText(_filePath, logEntry);
+
+        // Optional: Also print to console so you can see it's working
+        Console.WriteLine($"Current Data Sample: {printable}");
+    }
+}

@@ -18,8 +18,9 @@ public class ByteTrainingEnvironment : IEnvironment<byte>
     public int ActionSize => 1;
 
     /// <inheritdoc />
+    // Change >= to >
     public bool IsDone => _stepsTaken >= _maxStepsPerEpisode ||
-                          _currentPosition + _contextWindowSize + 1 >= _data.Length;
+                        _currentPosition + _contextWindowSize + 1 > _data.Length;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ByteTrainingEnvironment"/> class.
