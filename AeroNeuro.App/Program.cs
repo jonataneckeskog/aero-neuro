@@ -15,7 +15,7 @@ var outputExtractor = new OutputExtractor(environment.ActionSize);
 var programExecutor = new BasicProgramExecutor();
 
 var agentProvider = new GenomeAgentProvider(environment, mutationStrategy, outputExtractor, programExecutor, 128, networkSize: 128, memorySize: 256);
-var fitnessEvaluator = new TrainingFitnessEvaluator<byte>(environment, 10, 5000);
+var fitnessEvaluator = new TrainingFitnessEvaluator<byte>(environment, 10, 10, 5000);
 var populationSelector = new TopFractionPopulationSelector<byte>(0.2f);
 var agentPersistence = new GenomeAgentPersistence(mutationStrategy, outputExtractor, programExecutor);
 var statsDisplayer = new StatsDisplayer(stats =>
