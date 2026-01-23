@@ -13,9 +13,9 @@ var mutationStrategy = new BasicMutationStrategy();
 var outputExtractor = new OutputExtractor(environment.ActionSize);
 var programExecutor = new BasicProgramExecutor();
 
-var agentProvider = new GenomeAgentProvider(environment, mutationStrategy, outputExtractor, programExecutor, 128, networkSize: 32, memorySize: 64);
-var fitnessEvaluator = new TrainingFitnessEvaluator<byte>(environment, 50, 1000);
-var populationSelector = new TopFractionPopulationSelector<byte>(0.1f);
+var agentProvider = new GenomeAgentProvider(environment, mutationStrategy, outputExtractor, programExecutor, 128, networkSize: 32, memorySize: 32);
+var fitnessEvaluator = new TrainingFitnessEvaluator<byte>(environment, 20, 1000);
+var populationSelector = new TopFractionPopulationSelector<byte>(0.2f);
 var agentPersistence = new GenomeAgentPersistence(mutationStrategy, outputExtractor, programExecutor);
 var statsDisplayer = new StatsDisplayer(stats =>
 {
@@ -39,12 +39,12 @@ var builder = new AeroNeuroBuilder<byte>()
         }
     })
     .WithStatsDisplayer(statsDisplayer)
-    .WithPopulationSize(50);
+    .WithPopulationSize(20);
 
 var trainingSession = builder.Build();
 
 Console.WriteLine("Starting training...");
-trainingSession.Run(5000);
+trainingSession.Run(10000);
 Console.WriteLine("Training finished.");
 
 
@@ -72,7 +72,7 @@ foreach (var line in lines)
 // We pass our list of 'StatsPoint' directly.
 var simplifiedPoints = RamerDouglasPeucker2D.Simplify(
     dataPoints,
-    epsilon: 2.2f,            // Tolerance: higher = fewer points
+    epsilon: 4f,            // Tolerance: higher = fewer points
     getX: p => p.Generation,  // Lambda: how to get X
     getY: p => p.BestFitness  // Lambda: how to get Y
 );
