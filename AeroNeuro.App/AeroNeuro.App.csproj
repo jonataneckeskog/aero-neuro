@@ -4,6 +4,10 @@
     <ProjectReference Include="..\AeroNeuro.Core\AeroNeuro.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="PolylineSimplifier" Version="1.0.0" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>

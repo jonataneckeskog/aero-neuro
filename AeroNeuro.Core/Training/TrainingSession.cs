@@ -1,4 +1,3 @@
-using AeroNeuro.Core.Agents;
 using AeroNeuro.Core.Environments;
 
 namespace AeroNeuro.Core.Training;
@@ -10,19 +9,16 @@ public class TrainingSession<T>
 {
     private readonly IEvolutionTrainer<T> _trainer;
     private readonly IStatsDisplayer _statsDisplayer;
-    private readonly IAgentPersistence<T>? _agentPersistence;
-    private readonly IEnvironmentDisplayer<T>? _environmentDisplayer;
     private readonly IEnvironment<T>? _environment;
+    private readonly IEnumerable<ITrainingSessionHook<T>> _hooks;
 
     public TrainingSession(IEvolutionTrainer<T> trainer, IStatsDisplayer statsDisplayer,
-        IAgentPersistence<T>? agentPersistence, IEnvironmentDisplayer<T>? environmentDisplayer,
-        IEnvironment<T>? environment)
+        IEnvironment<T>? environment, IEnumerable<ITrainingSessionHook<T>> hooks)
     {
         _trainer = trainer;
         _statsDisplayer = statsDisplayer;
-        _agentPersistence = agentPersistence;
-        _environmentDisplayer = environmentDisplayer;
         _environment = environment;
+        _hooks = hooks ?? new List<ITrainingSessionHook<T>>();
     }
 
     /// <summary>
@@ -35,6 +31,11 @@ public class TrainingSession<T>
         {
             _trainer.EvolveGeneration();
             _statsDisplayer.DisplayStats(_trainer.GetStats());
+
+            foreach (var hook in _hooks)
+            {
+                hook.OnGenerationEvolved(_trainer.GetStats(), _trainer, _environment);
+            }
         }
     }
 
@@ -49,6 +50,11 @@ public class TrainingSession<T>
             _trainer.EvolveGeneration();
             EvolutionStats stats = _trainer.GetStats();
             _statsDisplayer.DisplayStats(stats);
+
+            foreach (var hook in _hooks)
+            {
+                hook.OnGenerationEvolved(stats, _trainer, _environment);
+            }
 
             if (stopCondition(stats))
             {

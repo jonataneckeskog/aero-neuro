@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using AeroNeuro.Core.Agents;
 using AeroNeuro.Core.Environments;
 
@@ -9,14 +10,14 @@ namespace AeroNeuro.Core.Training;
 public class TrainingFitnessEvaluator<T> : IFitnessEvaluator<T>
 {
     private readonly IEnvironment<T> _environment;
-    private readonly int _maxSteps;
     private readonly int _episodes;
+    private readonly int _maxSteps;
 
-    public TrainingFitnessEvaluator(IEnvironment<T> environment, int maxSteps, int episodes = 1)
+    public TrainingFitnessEvaluator(IEnvironment<T> environment, int episodes, int maxSteps)
     {
         _environment = environment;
-        _maxSteps = maxSteps;
         _episodes = episodes;
+        _maxSteps = maxSteps;
     }
 
     /// <inheritdoc/>
@@ -36,9 +37,9 @@ public class TrainingFitnessEvaluator<T> : IFitnessEvaluator<T>
                 episodeReward += _environment.Step(actions);
                 i++;
             }
-            totalFitness += episodeReward;
+            totalFitness += episodeReward * (e + 1);
         }
 
-        return totalFitness / _episodes;
+        return totalFitness;
     }
 }

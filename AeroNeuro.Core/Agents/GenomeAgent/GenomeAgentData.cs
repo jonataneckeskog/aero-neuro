@@ -8,4 +8,6 @@ public class GenomeAgentData : AgentData
     public int InputSize { get; set; }
     public int MemorySize { get; set; }
     public int NetworkSize { get; set; }
+    public int GenomeSize { get; set; }
+    public int MaxNetworkSize { get; set; }
 }
