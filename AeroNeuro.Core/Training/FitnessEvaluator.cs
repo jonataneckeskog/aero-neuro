@@ -24,6 +24,7 @@ public class TrainingFitnessEvaluator<T> : IFitnessEvaluator<T>
     public float Evaluate(IAgent<T> agent)
     {
         float totalFitness = 0;
+        long startTimestamp = Stopwatch.GetTimestamp();
 
         for (int e = 0; e < _episodes; e++)
         {
@@ -40,6 +41,10 @@ public class TrainingFitnessEvaluator<T> : IFitnessEvaluator<T>
             totalFitness += episodeReward * (e + 1);
         }
 
-        return totalFitness;
+        long endTimestamp = Stopwatch.GetTimestamp();
+        double elapsedSeconds = Stopwatch.GetElapsedTime(startTimestamp, endTimestamp).TotalSeconds;
+        float timePenalty = (float)(elapsedSeconds * 10f);
+
+        return totalFitness - timePenalty;
     }
 }
