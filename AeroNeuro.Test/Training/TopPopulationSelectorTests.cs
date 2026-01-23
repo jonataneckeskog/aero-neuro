@@ -16,7 +16,7 @@ public class TopFractionPopulationSelectorTests
     [Fact]
     public void SelectPopulation_SelectsTopHalf()
     {
-        TopFractionPopulationSelector<float> selector = new TopFractionPopulationSelector<float>(0.5f);
+        OutlierPopulationSelector<float> selector = new TopFractionPopulationSelector<float>(0.5f);
         List<(float Fitness, IAgent<float> Agent)> evaluatedPopulation = CreateEvaluatedPopulation(10);
         List<IAgent<float>> selectedAgents = selector.SelectPopulation(evaluatedPopulation);
         Assert.Equal(5, selectedAgents.Count);
@@ -27,7 +27,7 @@ public class TopFractionPopulationSelectorTests
     [Fact]
     public void SelectPopulation_FractionResultsInZero_SelectsOne()
     {
-        TopFractionPopulationSelector<float> selector = new TopFractionPopulationSelector<float>(0.01f);
+        OutlierPopulationSelector<float> selector = new TopFractionPopulationSelector<float>(0.01f);
         List<(float Fitness, IAgent<float> Agent)> evaluatedPopulation = CreateEvaluatedPopulation(10);
         List<IAgent<float>> selectedAgents = selector.SelectPopulation(evaluatedPopulation);
         Assert.Single(selectedAgents);
@@ -45,7 +45,7 @@ public class TopFractionPopulationSelectorTests
     [Fact]
     public void SelectPopulation_EmptyPopulation_ReturnsEmptyList()
     {
-        TopFractionPopulationSelector<float> selector = new TopFractionPopulationSelector<float>(0.5f);
+        OutlierPopulationSelector<float> selector = new TopFractionPopulationSelector<float>(0.5f);
         List<(float Fitness, IAgent<float> Agent)> evaluatedPopulation = new List<(float, IAgent<float>)>();
         List<IAgent<float>> selectedAgents = selector.SelectPopulation(evaluatedPopulation);
         Assert.Empty(selectedAgents);

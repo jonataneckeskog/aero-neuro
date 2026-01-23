@@ -9,17 +9,19 @@ using PolylineSimplifier;
 const string AgentSavePath = "best_agent.json";
 const string DataOutputPath = "byte_training_output.txt";
 
-var environment = new ByteTrainingEnvironment("training_data.txt", contextWindowSize: 16, stepsPerEpisode: 20);
-var mutationStrategy = new BasicMutationStrategy();
+var environment = new ByteTrainingEnvironment("training_data.txt", 64, 16);
+var trainingStateProvider = new TrainingStateProvider();
+var mutationStrategy = new StallDetectorMutationStrategy(trainingStateProvider, 1028, 256);
 var outputExtractor = new OutputExtractor(environment.ActionSize);
 var programExecutor = new BasicProgramExecutor();
 
-var agentProvider = new GenomeAgentProvider(environment, mutationStrategy, outputExtractor, programExecutor, 128, networkSize: 128, memorySize: 256);
-var fitnessEvaluator = new TrainingFitnessEvaluator<byte>(environment, 10, 10, 5000);
-var populationSelector = new TopFractionPopulationSelector<byte>(0.2f);
+var agentProvider = new GenomeAgentProvider(environment, mutationStrategy, outputExtractor, programExecutor, 1028, networkSize: 512, memorySize: 1028);
+var fitnessEvaluator = new TrainingFitnessEvaluator<byte>(environment, 64, 1028, 1000);
+var populationSelector = new OutlierPopulationSelector<byte>(0.05f, 1.5f, 4, 8);
 var agentPersistence = new GenomeAgentPersistence(mutationStrategy, outputExtractor, programExecutor);
 var statsDisplayer = new StatsDisplayer(stats =>
 {
+    trainingStateProvider.UpdateStats(stats);
     Console.WriteLine($"Generation: {stats.Generation}, Best Fitness: {stats.BestFitness}, Average Fitness: {stats.AverageFitness:F2}");
 
     string csvLine = $"{stats.Generation},{stats.BestFitness},{stats.AverageFitness}{Environment.NewLine}";
@@ -43,12 +45,12 @@ var builder = new AeroNeuroBuilder<byte>()
     })
     .WithConditionalAction(stats => (stats.Generation + 1) % 100 == 0, displayerHook.DisplayEnvironment)
     .WithStatsDisplayer(statsDisplayer)
-    .WithPopulationSize(20);
+    .WithPopulationSize(32);
 
 var trainingSession = builder.Build();
 
 Console.WriteLine("Starting training...");
-trainingSession.Run(5000);
+trainingSession.Run(50000);
 Console.WriteLine("Training finished.");
 
 

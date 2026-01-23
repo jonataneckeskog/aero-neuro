@@ -55,7 +55,7 @@ public class StallDetectorMutationStrategy : IMutationStrategy<ushort[]>
         }
         else if (_fitnessObserver.GetGenerationCount() - _generationDelay > _lastGenerationChecked) // Increase mutation on stall
         {
-            bitsToFlip += 2;
+            bitsToFlip += 1;
         }
 
         // 3. Execute flips
