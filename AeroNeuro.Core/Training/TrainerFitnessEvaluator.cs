@@ -12,11 +12,13 @@ public class TrainingFitnessEvaluator<T> : IFitnessEvaluator<T>
     private readonly IEnvironment<T> _environment;
     private readonly int _episodes;
     private readonly int _maxSteps;
+    private readonly int _timeWeight;
 
-    public TrainingFitnessEvaluator(IEnvironment<T> environment, int episodes, int maxSteps)
+    public TrainingFitnessEvaluator(IEnvironment<T> environment, int episodes, int timeWeight, int maxSteps)
     {
         _environment = environment;
         _episodes = episodes;
+        _timeWeight = timeWeight;
         _maxSteps = maxSteps;
     }
 
@@ -24,6 +26,7 @@ public class TrainingFitnessEvaluator<T> : IFitnessEvaluator<T>
     public float Evaluate(IAgent<T> agent)
     {
         float totalFitness = 0;
+        long startTimestamp = Stopwatch.GetTimestamp();
 
         for (int e = 0; e < _episodes; e++)
         {
@@ -40,6 +43,10 @@ public class TrainingFitnessEvaluator<T> : IFitnessEvaluator<T>
             totalFitness += episodeReward * (e + 1);
         }
 
-        return totalFitness;
+        long endTimestamp = Stopwatch.GetTimestamp();
+        double elapsedSeconds = Stopwatch.GetElapsedTime(startTimestamp, endTimestamp).TotalSeconds;
+        float timePenalty = (float)(elapsedSeconds * _timeWeight);
+
+        return totalFitness - timePenalty;
     }
 }
