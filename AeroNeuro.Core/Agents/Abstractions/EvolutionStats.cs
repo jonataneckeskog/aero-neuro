@@ -1,4 +1,4 @@
-namespace AeroNeuro.Core.Training;
+namespace AeroNeuro.Core.Agents.Abstractions;
 
 /// <summary>
 /// Statistics about the current state of evolution training.

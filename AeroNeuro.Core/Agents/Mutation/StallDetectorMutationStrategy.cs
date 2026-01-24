@@ -1,23 +1,24 @@
 using AeroNeuro.Common;
+using AeroNeuro.Core.Agents.Abstractions;
 using System.Runtime.CompilerServices;
 
 namespace AeroNeuro.Core.Agents;
 
 public class StallDetectorMutationStrategy : IMutationStrategy<ushort[]>
 {
-    private ITrainingStateProvider _fitnessObserver;
+    private IEvolutionContext _evolutionObserver;
     private int _generationDelay;
     private float _fitnessThreshold;
     private int _lastGenerationChecked;
     private float _lastFitnessChecked;
 
-    public StallDetectorMutationStrategy(ITrainingStateProvider fitnessObserver, int generationDelay, float fitnessThreshold)
+    public StallDetectorMutationStrategy(IEvolutionContext evolutionObserver, int generationDelay, float fitnessThreshold)
     {
-        _fitnessObserver = fitnessObserver;
+        _evolutionObserver = evolutionObserver;
         _generationDelay = generationDelay;
         _fitnessThreshold = fitnessThreshold;
-        _lastGenerationChecked = fitnessObserver.GetGenerationCount();
-        _lastFitnessChecked = fitnessObserver.GetBestFitness();
+        _lastGenerationChecked = evolutionObserver.GetCurrentStats().Generation;
+        _lastFitnessChecked = evolutionObserver.GetCurrentStats().BestFitness;
     }
 
     /// <inheritdoc/>
@@ -47,13 +48,13 @@ public class StallDetectorMutationStrategy : IMutationStrategy<ushort[]>
             _ => 5
         };
 
-        float currentFitness = _fitnessObserver.GetBestFitness();
+        float currentFitness = _evolutionObserver.GetCurrentStats().BestFitness;
         if (currentFitness - _lastFitnessChecked > _fitnessThreshold) // Reset on improvement
         {
-            _lastGenerationChecked = _fitnessObserver.GetGenerationCount();
+            _lastGenerationChecked = _evolutionObserver.GetCurrentStats().Generation;
             _lastFitnessChecked = currentFitness;
         }
-        else if (_fitnessObserver.GetGenerationCount() - _generationDelay > _lastGenerationChecked) // Increase mutation on stall
+        else if (_evolutionObserver.GetCurrentStats().Generation - _generationDelay > _lastGenerationChecked) // Increase mutation on stall
         {
             bitsToFlip += 1;
         }
