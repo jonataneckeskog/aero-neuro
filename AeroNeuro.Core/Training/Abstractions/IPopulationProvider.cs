@@ -14,12 +14,12 @@ public interface IPopulationProvider<T>
     HashSet<IAgent<T>> Population { get; set; }
 
     /// <summary>
-    /// Utility to get the population in a read-only format for UI or logging.
-    /// </summary>
-    IEnumerable<IInspectableAgent> GetInspectablePopulation();
-
-    /// <summary>
     /// The size of the current population.
     /// </summary>
     int PopulationSize { get; set; }
+
+    /// <summary>
+    /// Utility to get the population in a read-only format for UI or logging.
+    /// </summary>
+    IEnumerable<IInspectableAgent> GetInspectablePopulation();
 }
