@@ -1,4 +1,6 @@
-namespace AeroNeuro.Core.Training;
+using AeroNeuro.Core.Agents.Abstractions;
+
+namespace AeroNeuro.Core.Training.Statistics;
 
 /// <summary>
 /// Interface for displaying evolution training statistics.

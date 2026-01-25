@@ -1,4 +1,6 @@
-namespace AeroNeuro.Core.Agents;
+using AeroNeuro.Core.Agents.Abstractions;
+
+namespace AeroNeuro.Core.Agents.Persistence;
 
 /// <summary>
 /// Interface for persisting and loading agent data.

@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using AeroNeuro.Core.Agents;
-using AeroNeuro.Core.Environments;
+using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Environments.Abstractions;
 
-namespace AeroNeuro.Core.Training;
+namespace AeroNeuro.Core.Training.Evaluation;
 
 /// <summary>
 /// Evaluates the fitness of an agent using given rewards from the environment.

@@ -1,4 +1,4 @@
-namespace AeroNeuro.Core.Agents;
+namespace AeroNeuro.Core.Agents.Abstractions;
 
 public abstract class AgentData
 {

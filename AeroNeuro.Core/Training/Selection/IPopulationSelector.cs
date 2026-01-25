@@ -1,6 +1,6 @@
-using AeroNeuro.Core.Agents;
+using AeroNeuro.Core.Agents.Abstractions;
 
-namespace AeroNeuro.Core.Training;
+namespace AeroNeuro.Core.Training.Selection;
 
 /// <summary>
 /// Interface for selecting a population of agents based on their fitness.

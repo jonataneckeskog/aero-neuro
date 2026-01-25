@@ -1,4 +1,6 @@
-namespace AeroNeuro.Core.Environments;
+using AeroNeuro.Core.Environments.Abstractions;
+
+namespace AeroNeuro.Core.Environments.Concrete;
 
 /// <summary>
 /// A 5x5 Grid World where the agent must pick up a Key before exiting through a Door.

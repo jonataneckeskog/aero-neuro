@@ -1,6 +1,7 @@
-using AeroNeuro.Common;
+using AeroNeuro.Core.Common;
+using AeroNeuro.Core.Environments.Abstractions;
 
-namespace AeroNeuro.Core.Environments;
+namespace AeroNeuro.Core.Environments.Concrete;
 
 public class ByteTrainingEnvironment : IEnvironment<byte>
 {

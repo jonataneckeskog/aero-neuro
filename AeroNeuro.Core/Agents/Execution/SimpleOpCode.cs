@@ -1,4 +1,4 @@
-namespace AeroNeuro.Core.Agents;
+namespace AeroNeuro.Core.Agents.Execution;
 
 /// <summary>
 /// The 16-bit Instruction Layout:

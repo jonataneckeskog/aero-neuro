@@ -1,6 +1,8 @@
-using AeroNeuro.Core.Environments;
+using AeroNeuro.Core.Environments.Abstractions;
+using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Training.Abstractions;
 
-namespace AeroNeuro.Core.Training;
+namespace AeroNeuro.Core.Training.Session;
 
 /// <summary>
 /// Orchestrates the training process using an evolution trainer.
@@ -8,15 +10,13 @@ namespace AeroNeuro.Core.Training;
 public class TrainingSession<T>
 {
     private readonly IEvolutionTrainer<T> _trainer;
-    private readonly IStatsDisplayer _statsDisplayer;
     private readonly IEnvironment<T>? _environment;
     private readonly IEnumerable<ITrainingSessionHook<T>> _hooks;
 
-    public TrainingSession(IEvolutionTrainer<T> trainer, IStatsDisplayer statsDisplayer,
-        IEnvironment<T>? environment, IEnumerable<ITrainingSessionHook<T>> hooks)
+    public TrainingSession(IEvolutionTrainer<T> trainer, IEnvironment<T>? environment,
+        IEnumerable<ITrainingSessionHook<T>> hooks)
     {
         _trainer = trainer;
-        _statsDisplayer = statsDisplayer;
         _environment = environment;
         _hooks = hooks ?? new List<ITrainingSessionHook<T>>();
     }
@@ -30,7 +30,6 @@ public class TrainingSession<T>
         for (int i = 0; i < generations; i++)
         {
             _trainer.EvolveGeneration();
-            _statsDisplayer.DisplayStats(_trainer.GetStats());
 
             foreach (var hook in _hooks)
             {
@@ -49,7 +48,6 @@ public class TrainingSession<T>
         {
             _trainer.EvolveGeneration();
             EvolutionStats stats = _trainer.GetStats();
-            _statsDisplayer.DisplayStats(stats);
 
             foreach (var hook in _hooks)
             {

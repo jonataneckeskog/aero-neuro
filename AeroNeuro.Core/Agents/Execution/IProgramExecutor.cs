@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace AeroNeuro.Core.Agents;
+namespace AeroNeuro.Core.Agents.Execution;
 
 public interface IProgramExecutor<T, K> where T : INumber<T>
 {

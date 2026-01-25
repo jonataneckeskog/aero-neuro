@@ -1,4 +1,4 @@
-namespace AeroNeuro.Core.Agents;
+namespace AeroNeuro.Core.Agents.Execution;
 
 /// <summary>
 /// A 16-bit instruction represented with bit fields for easy access.

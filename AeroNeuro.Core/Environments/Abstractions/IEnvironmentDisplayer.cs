@@ -1,4 +1,4 @@
-namespace AeroNeuro.Core.Environments;
+namespace AeroNeuro.Core.Environments.Abstractions;
 
 /// <summary>
 /// Interface for displaying environments to the user.

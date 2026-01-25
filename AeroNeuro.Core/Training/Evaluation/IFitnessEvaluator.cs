@@ -1,6 +1,6 @@
-using AeroNeuro.Core.Agents;
+using AeroNeuro.Core.Agents.Abstractions;
 
-namespace AeroNeuro.Core.Training;
+namespace AeroNeuro.Core.Training.Evaluation;
 
 /// <summary>
 /// Interface for evaluating the fitness of agents. Higher fitness indicates better performance.

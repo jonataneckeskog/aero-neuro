@@ -1,12 +1,14 @@
-using AeroNeuro.Core.Environments;
-using AeroNeuro.Common;
+using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Agents.Execution;
+using AeroNeuro.Core.Agents.Mutation;
+using AeroNeuro.Core.Common;
 using System.Numerics;
 
-namespace AeroNeuro.Core.Agents.GenomeAgent;
+namespace AeroNeuro.Core.Agents.Implementations.GenomeAgent;
 
 public class GenomeAgentProvider : IAgentProvider<byte>
 {
-    private readonly IEnvironment<byte> _environment;
+    private readonly AgentTopology _agentTopology;
     private readonly IMutationStrategy<ushort[]> _mutationStrategy;
     private readonly IOutputExtractor<byte, byte[]> _outputExtractor;
     private readonly IProgramExecutor<byte, ushort[]> _programExecutor;
@@ -14,13 +16,13 @@ public class GenomeAgentProvider : IAgentProvider<byte>
     private readonly int _memorySize;
     private readonly int _maxNetworkSize;
 
-    public GenomeAgentProvider(IEnvironment<byte> environment,
+    public GenomeAgentProvider(AgentTopology agentTopology,
         IMutationStrategy<ushort[]> mutationStrategy,
         IOutputExtractor<byte, byte[]> outputExtractor,
         IProgramExecutor<byte, ushort[]> programExecutor,
         int maxNetworkSize, int networkSize = 32, int memorySize = 32)
     {
-        _environment = environment;
+        _agentTopology = agentTopology;
         _mutationStrategy = mutationStrategy;
         _outputExtractor = outputExtractor;
         _programExecutor = programExecutor;
@@ -36,7 +38,7 @@ public class GenomeAgentProvider : IAgentProvider<byte>
             _mutationStrategy,
             _outputExtractor,
             _programExecutor,
-            _environment.ObservationSize,
+            _agentTopology.InputCount,
             _networkSize,
             _memorySize,
             _maxNetworkSize
@@ -52,9 +54,11 @@ public class GenomeAgentProvider : IAgentProvider<byte>
             _mutationStrategy,
             _outputExtractor,
             _programExecutor,
-            _environment.ObservationSize,
+            _agentTopology.InputCount,
             networkSize: networkSize,
-            memorySize: (int)BitOperations.RoundUpToPowerOf2((uint)Math.Max(networkSize, _environment.ObservationSize)),
+            memorySize: (int)BitOperations.RoundUpToPowerOf2(
+                (uint)Math.Max(networkSize, Math.Max(_agentTopology.InputCount,
+                _agentTopology.OutputCount))),
             maxNetworkSize: _maxNetworkSize
             );
 

@@ -1,4 +1,4 @@
-namespace AeroNeuro.Core.Agents;
+namespace AeroNeuro.Core.Agents.Execution;
 
 public class OutputExtractor : IOutputExtractor<byte, byte[]>
 {

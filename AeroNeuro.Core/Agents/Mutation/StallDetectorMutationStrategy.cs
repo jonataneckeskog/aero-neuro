@@ -1,8 +1,8 @@
-using AeroNeuro.Common;
+using AeroNeuro.Core.Common;
 using AeroNeuro.Core.Agents.Abstractions;
 using System.Runtime.CompilerServices;
 
-namespace AeroNeuro.Core.Agents;
+namespace AeroNeuro.Core.Agents.Mutation;
 
 public class StallDetectorMutationStrategy : IMutationStrategy<ushort[]>
 {

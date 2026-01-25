@@ -1,6 +1,9 @@
-namespace AeroNeuro.Core.Training;
+using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Environments.Abstractions;
+using AeroNeuro.Core.Training.Abstractions;
 
-using AeroNeuro.Core.Environments;
+
+namespace AeroNeuro.Core.Training.Session;
 
 /// <summary>
 /// Represents a hook that is executed after each generation in the training session.

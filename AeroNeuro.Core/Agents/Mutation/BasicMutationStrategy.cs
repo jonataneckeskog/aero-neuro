@@ -1,7 +1,7 @@
-using AeroNeuro.Common;
+using AeroNeuro.Core.Common;
 using System.Runtime.CompilerServices;
 
-namespace AeroNeuro.Core.Agents;
+namespace AeroNeuro.Core.Agents.Mutation;
 
 public class BasicMutationStrategy : IMutationStrategy<ushort[]>
 {

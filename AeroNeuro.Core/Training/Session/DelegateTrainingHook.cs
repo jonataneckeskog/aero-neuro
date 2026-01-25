@@ -1,6 +1,8 @@
-namespace AeroNeuro.Core.Training;
+using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Environments.Abstractions;
+using AeroNeuro.Core.Training.Abstractions;
 
-using AeroNeuro.Core.Environments;
+namespace AeroNeuro.Core.Training.Session;
 
 /// <summary>
 /// A generic hook that executes an action if a predicate is met.

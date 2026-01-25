@@ -1,4 +1,4 @@
-namespace AeroNeuro.Core.Agents;
+namespace AeroNeuro.Core.Agents.Abstractions;
 
 /// <summary>
 /// Interface for providing new agent instances.

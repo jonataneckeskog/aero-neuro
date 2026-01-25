@@ -1,4 +1,4 @@
-namespace AeroNeuro.Core.Environments;
+namespace AeroNeuro.Core.Environments.Abstractions;
 
 /// <summary>
 /// Interface for an environment that agents can interact with. It could be a

@@ -1,6 +1,6 @@
-using AeroNeuro.Core.Agents;
+using AeroNeuro.Core.Agents.Abstractions;
 
-namespace AeroNeuro.Core.Training;
+namespace AeroNeuro.Core.Training.Abstractions;
 
 /// <summary>
 /// Interface for an evolution trainer that manages a population of agents,

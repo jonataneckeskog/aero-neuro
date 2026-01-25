@@ -1,4 +1,9 @@
-namespace AeroNeuro.Core.Agents.GenomeAgent;
+using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Agents.Execution;
+using AeroNeuro.Core.Agents.Mutation;
+using AeroNeuro.Core.Agents.Persistence;
+
+namespace AeroNeuro.Core.Agents.Implementations.GenomeAgent;
 
 public class GenomeAgentPersistence : IAgentPersistence<byte>
 {

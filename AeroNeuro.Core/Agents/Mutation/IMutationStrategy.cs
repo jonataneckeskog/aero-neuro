@@ -1,4 +1,4 @@
-namespace AeroNeuro.Core.Agents;
+namespace AeroNeuro.Core.Agents.Mutation;
 
 public interface IMutationStrategy<T>
 {

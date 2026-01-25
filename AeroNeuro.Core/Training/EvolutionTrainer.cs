@@ -1,6 +1,9 @@
 using System.Diagnostics;
-using AeroNeuro.Core.Agents;
+using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Training.Abstractions;
 using AeroNeuro.Core.Exceptions;
+using AeroNeuro.Core.Training.Evaluation;
+using AeroNeuro.Core.Training.Selection;
 
 namespace AeroNeuro.Core.Training;
 

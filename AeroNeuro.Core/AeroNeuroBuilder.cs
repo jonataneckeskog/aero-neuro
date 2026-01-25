@@ -1,6 +1,10 @@
-using AeroNeuro.Core.Agents;
-using AeroNeuro.Core.Environments;
+using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Environments.Abstractions;
 using AeroNeuro.Core.Training;
+using AeroNeuro.Core.Training.Abstractions;
+using AeroNeuro.Core.Training.Evaluation;
+using AeroNeuro.Core.Training.Selection;
+using AeroNeuro.Core.Training.Session;
 
 namespace AeroNeuro.Core;
 
@@ -13,8 +17,7 @@ public class AeroNeuroBuilder<T>
     private IAgentProvider<T>? _agentProvider;
     private IPopulationSelector<T>? _populationSelector;
     private IFitnessEvaluator<T>? _fitnessEvaluator;
-    private IStatsDisplayer? _statsDisplayer;
-    private int _populationSize = 100;
+    private int _populationSize = 0;
     private readonly List<ITrainingSessionHook<T>> _hooks = new();
 
     /// <summary>
@@ -94,17 +97,6 @@ public class AeroNeuroBuilder<T>
     }
 
     /// <summary>
-    /// Sets the stats displayer.
-    /// </summary>
-    /// <param name="statsDisplayer"></param>
-    /// <returns></returns>
-    public AeroNeuroBuilder<T> WithStatsDisplayer(IStatsDisplayer statsDisplayer)
-    {
-        _statsDisplayer = statsDisplayer;
-        return this;
-    }
-
-    /// <summary>
     /// Sets the population size. Default is 100.
     /// </summary>
     public AeroNeuroBuilder<T> WithPopulationSize(int size)
@@ -119,8 +111,7 @@ public class AeroNeuroBuilder<T>
     public TrainingSession<T> Build()
     {
         if (_environment is null || _agentProvider is null
-            || _populationSelector is null || _fitnessEvaluator is null
-            || _statsDisplayer is null)
+            || _populationSelector is null || _fitnessEvaluator is null || _populationSize == 0)
         {
             throw new InvalidOperationException("Missing mandatory components.");
         }
@@ -132,6 +123,6 @@ public class AeroNeuroBuilder<T>
             _populationSize
         );
 
-        return new TrainingSession<T>(trainer, _statsDisplayer, _environment, _hooks);
+        return new TrainingSession<T>(trainer, _environment, _hooks);
     }
 }
