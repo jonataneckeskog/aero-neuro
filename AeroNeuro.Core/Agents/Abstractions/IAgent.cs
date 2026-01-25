@@ -1,9 +1,9 @@
 namespace AeroNeuro.Core.Agents.Abstractions;
 
 /// <summary>
-/// Interface for an agent that can interact with an environment.
+/// The full agent capability used by the Trainer.
 /// </summary>
-public interface IAgent<T>
+public interface IAgent<T> : IInspectableAgent
 {
     /// <summary>
     /// Decide on actions based on observations.
@@ -19,9 +19,4 @@ public interface IAgent<T>
     /// Apply mutation to the agent's internal mutation system.
     /// </summary>
     void Mutate();
-
-    /// <summary>
-    /// Get the agent's data representation.
-    /// </summary>
-    AgentData GetAgentData();
 }

@@ -1,29 +1,25 @@
-using AeroNeuro.Core.Agents.Abstractions;
-using AeroNeuro.Core.Environments.Abstractions;
-using AeroNeuro.Core.Training.Abstractions;
-
 namespace AeroNeuro.Core.Training.Session;
 
 /// <summary>
-/// A generic hook that executes an action if a predicate is met.
+/// A simple hook that executes a specific action at the end of every generation.
 /// </summary>
-public class DelegateTrainingHook<T> : ITrainingSessionHook<T>
+public class GenerationEndHook : ITrainingSessionHook
 {
-    private readonly Func<EvolutionStats, bool> _predicate;
-    private readonly Action<EvolutionStats, IEvolutionTrainer<T>, IEnvironment<T>?> _action;
+    private readonly Action<TrainingContext> _onGenerationEndAction;
 
-    public DelegateTrainingHook(Func<EvolutionStats, bool> predicate, Action<EvolutionStats, IEvolutionTrainer<T>, IEnvironment<T>?> action)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GenerationEndHook{T}"/> class.
+    /// </summary>
+    /// <param name="onGenerationEndAction">The action to execute when a generation finishes.</param>
+    public GenerationEndHook(Action<TrainingContext> onGenerationEndAction)
     {
-        _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
-        _action = action ?? throw new ArgumentNullException(nameof(action));
+        _onGenerationEndAction = onGenerationEndAction
+            ?? throw new ArgumentNullException(nameof(onGenerationEndAction));
     }
 
     /// <inheritdoc/>
-    public void OnGenerationEnd(TrainingContext<T> context)
+    public void OnGenerationEnd(TrainingContext context)
     {
-        if (context.Stats != null && _predicate(context.Stats))
-        {
-            _action(context.Stats, context.Trainer, context.Environment);
-        }
+        _onGenerationEndAction(context);
     }
 }

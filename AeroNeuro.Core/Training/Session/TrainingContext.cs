@@ -1,39 +1,29 @@
 using AeroNeuro.Core.Agents.Abstractions;
-using AeroNeuro.Core.Environments.Abstractions;
-using AeroNeuro.Core.Training.Abstractions;
 
 namespace AeroNeuro.Core.Training.Session;
 
-/// <summary>
-/// Contains the state and context for the current training session.
-/// Passed to hooks during lifecycle events.
-/// </summary>
-public class TrainingContext<T>
+public class TrainingContext
 {
-    public TrainingContext(IEvolutionTrainer<T> trainer, IEnvironment<T>? environment = null)
+    public TrainingContext(
+        IReadOnlyList<IInspectableAgent> population,
+        EvolutionStats stats)
     {
-        Trainer = trainer;
-        Environment = environment;
+        Population = population;
+        Stats = stats;
     }
 
     /// <summary>
-    /// The trainer instance managing the population.
+    /// The population in a Read-Only, Safe-to-Inspect state.
     /// </summary>
-    public IEvolutionTrainer<T> Trainer { get; }
+    public IReadOnlyList<IInspectableAgent> Population { get; }
 
     /// <summary>
-    /// The environment being used for training (if any).
+    /// Critical stats (Best Fitness, Generation Count, etc.)
     /// </summary>
-    public IEnvironment<T>? Environment { get; }
+    public EvolutionStats Stats { get; }
 
     /// <summary>
-    /// The statistics of the most recent generation. 
-    /// May be null if called before the first generation evolves (e.g. OnSessionStart).
-    /// </summary>
-    public EvolutionStats? Stats { get; set; }
-
-    /// <summary>
-    /// Set to true by a hook to signal the session to stop early.
+    /// A signal to the trainer to stop (e.g. if Target Fitness reached).
     /// </summary>
     public bool ShouldStop { get; set; } = false;
 }
