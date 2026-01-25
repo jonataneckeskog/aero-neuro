@@ -39,7 +39,7 @@ public class AeroNeuroBuilder<T>
     }
 
     /// <summary>
-    /// Sets the population selector. Defaults to null.
+    /// Sets the population selector.
     /// </summary>
     public AeroNeuroBuilder<T> WithPopulationSelector(IPopulationSelector<T> selector)
     {
@@ -48,7 +48,7 @@ public class AeroNeuroBuilder<T>
     }
 
     /// <summary>
-    /// Sets a custom fitness evaluator. If not set, a TrainingFitnessEvaluator will be created using the Environment.
+    /// Sets a custom fitness evaluator.
     /// </summary>
     public AeroNeuroBuilder<T> WithFitnessEvaluator(IFitnessEvaluator<T> evaluator)
     {
@@ -66,38 +66,7 @@ public class AeroNeuroBuilder<T>
     }
 
     /// <summary>
-    /// Adds a conditional action to be executed during training.
-    /// </summary>
-    public AeroNeuroBuilder<T> WithConditionalAction(Func<EvolutionStats, bool> predicate, Action<EvolutionStats, IEvolutionTrainer<T>, IEnvironment<T>?> action)
-    {
-        _hooks.Add(new DelegateTrainingHook<T>(predicate, action));
-        return this;
-    }
-
-    /// <summary>
-    /// Adds a conditional action that interacts with the environment.
-    /// </summary>
-    public AeroNeuroBuilder<T> WithConditionalAction(Func<EvolutionStats, bool> predicate, Action<IEnvironment<T>> action)
-    {
-        return WithConditionalAction(predicate, (stats, trainer, env) =>
-        {
-            if (env is not null)
-            {
-                action(env);
-            }
-        });
-    }
-
-    /// <summary>
-    /// Adds a conditional action that interacts with the trainer.
-    /// </summary>
-    public AeroNeuroBuilder<T> WithConditionalAction(Func<EvolutionStats, bool> predicate, Action<IEvolutionTrainer<T>> action)
-    {
-        return WithConditionalAction(predicate, (stats, trainer, env) => action(trainer));
-    }
-
-    /// <summary>
-    /// Sets the population size. Default is 100.
+    /// Sets the population size.
     /// </summary>
     public AeroNeuroBuilder<T> WithPopulationSize(int size)
     {
@@ -106,7 +75,8 @@ public class AeroNeuroBuilder<T>
     }
 
     /// <summary>
-    /// Builds the training session with the configured components.
+    /// Builds the training session with the configured components. Crashes if mandatory
+    /// components are not set.
     /// </summary>
     public TrainingSession<T> Build()
     {
