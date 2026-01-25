@@ -1,29 +1,29 @@
+using AeroNeuro.Core.Common;
 using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Training.Abstractions;
 
 namespace AeroNeuro.Core.Training.Session;
 
-public class TrainingContext
+public class TrainingContext<T>
 {
-    public TrainingContext(
-        IReadOnlyList<IInspectableAgent> population,
-        EvolutionStats stats)
+    private readonly IPopulationProvider<T> _populationProvider;
+    private readonly IEvolutionStatsProvider _statsProvider;
+
+    public TrainingContext(IPopulationProvider<T> populationProvider, IEvolutionStatsProvider statsProvider)
     {
-        Population = population;
-        Stats = stats;
+        _populationProvider = populationProvider;
+        _statsProvider = statsProvider;
     }
 
     /// <summary>
-    /// The population in a Read-Only, Safe-to-Inspect state.
+    /// Dynamically fetches the current population from the provider.
     /// </summary>
-    public IReadOnlyList<IInspectableAgent> Population { get; }
+    public IEnumerable<IInspectableAgent> Population => _populationProvider.GetInspectablePopulation();
 
     /// <summary>
-    /// Critical stats (Best Fitness, Generation Count, etc.)
+    /// Critical stats from the evolution process.
     /// </summary>
-    public EvolutionStats Stats { get; }
+    public EvolutionStats Stats => _statsProvider.GetCurrentStats();
 
-    /// <summary>
-    /// A signal to the trainer to stop (e.g. if Target Fitness reached).
-    /// </summary>
     public bool ShouldStop { get; set; } = false;
 }

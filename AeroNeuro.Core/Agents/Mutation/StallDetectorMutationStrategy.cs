@@ -1,18 +1,17 @@
 using AeroNeuro.Core.Common;
-using AeroNeuro.Core.Agents.Abstractions;
 using System.Runtime.CompilerServices;
 
 namespace AeroNeuro.Core.Agents.Mutation;
 
 public class StallDetectorMutationStrategy : IMutationStrategy<ushort[]>
 {
-    private IEvolutionContext _evolutionObserver;
+    private IEvolutionStatsProvider _evolutionObserver;
     private int _generationDelay;
     private float _fitnessThreshold;
     private int _lastGenerationChecked;
     private float _lastFitnessChecked;
 
-    public StallDetectorMutationStrategy(IEvolutionContext evolutionObserver, int generationDelay, float fitnessThreshold)
+    public StallDetectorMutationStrategy(IEvolutionStatsProvider evolutionObserver, int generationDelay, float fitnessThreshold)
     {
         _evolutionObserver = evolutionObserver;
         _generationDelay = generationDelay;

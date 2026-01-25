@@ -5,6 +5,7 @@ using AeroNeuro.Core.Training.Abstractions;
 using AeroNeuro.Core.Training.Evaluation;
 using AeroNeuro.Core.Training.Selection;
 using AeroNeuro.Core.Training.Session;
+using AeroNeuro.Core.Common;
 
 namespace AeroNeuro.Core;
 
@@ -13,21 +14,13 @@ namespace AeroNeuro.Core;
 /// </summary>
 public class AeroNeuroBuilder<T>
 {
-    private IEnvironment<T>? _environment;
     private IAgentProvider<T>? _agentProvider;
     private IPopulationSelector<T>? _populationSelector;
     private IFitnessEvaluator<T>? _fitnessEvaluator;
     private int _populationSize = 0;
+    private IEvolutionStatsProvider? _statsProvider;
+    private IPopulationProvider<T>? _populationProvider;
     private readonly List<ITrainingSessionHook<T>> _hooks = new();
-
-    /// <summary>
-    /// Sets the environment for the agents.
-    /// </summary>
-    public AeroNeuroBuilder<T> WithEnvironment(IEnvironment<T> environment)
-    {
-        _environment = environment;
-        return this;
-    }
 
     /// <summary>
     /// Sets the agent provider for creating agents.
@@ -57,15 +50,6 @@ public class AeroNeuroBuilder<T>
     }
 
     /// <summary>
-    /// Adds a generic training hook.
-    /// </summary>
-    public AeroNeuroBuilder<T> WithHook(ITrainingSessionHook<T> hook)
-    {
-        _hooks.Add(hook);
-        return this;
-    }
-
-    /// <summary>
     /// Sets the population size.
     /// </summary>
     public AeroNeuroBuilder<T> WithPopulationSize(int size)
@@ -75,24 +59,55 @@ public class AeroNeuroBuilder<T>
     }
 
     /// <summary>
+    /// Sets the stats provider.
+    /// </summary>
+    public AeroNeuroBuilder<T> WithStatsProvider(IEvolutionStatsProvider statsProvider)
+    {
+        _statsProvider = statsProvider;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the population provider.
+    /// </summary>
+    public AeroNeuroBuilder<T> WithPopulationProvider(IPopulationProvider<T> populationProvider)
+    {
+        _populationProvider = populationProvider;
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a generic training hook.
+    /// </summary>
+    public AeroNeuroBuilder<T> WithHook(ITrainingSessionHook<T> hook)
+    {
+        _hooks.Add(hook);
+        return this;
+    }
+
+    /// <summary>
     /// Builds the training session with the configured components. Crashes if mandatory
     /// components are not set.
     /// </summary>
     public TrainingSession<T> Build()
     {
-        if (_environment is null || _agentProvider is null
-            || _populationSelector is null || _fitnessEvaluator is null || _populationSize == 0)
+        if (_agentProvider is null
+            || _populationSelector is null || _fitnessEvaluator is null ||
+            _populationSize == 0 || _statsProvider is null || _populationProvider is null)
         {
             throw new InvalidOperationException("Missing mandatory components.");
         }
 
         IEvolutionTrainer<T> trainer = new EvolutionTrainer<T>(
-            _agentProvider,
+            _populationProvider,
+            _statsProvider,
             _fitnessEvaluator,
             _populationSelector,
             _populationSize
         );
 
-        return new TrainingSession<T>(trainer, _environment, _hooks);
+        TrainingContext<T> trainingContext = new TrainingContext<T>(_populationProvider, _statsProvider);
+
+        return new TrainingSession<T>(trainer, trainingContext, _hooks);
     }
 }

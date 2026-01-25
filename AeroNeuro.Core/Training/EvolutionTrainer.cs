@@ -4,44 +4,34 @@ using AeroNeuro.Core.Training.Abstractions;
 using AeroNeuro.Core.Exceptions;
 using AeroNeuro.Core.Training.Evaluation;
 using AeroNeuro.Core.Training.Selection;
+using AeroNeuro.Core.Common;
 
 namespace AeroNeuro.Core.Training;
 
 public class EvolutionTrainer<T> : IEvolutionTrainer<T>
 {
-    private readonly IAgentProvider<T> _agentProvider;
+    private readonly IPopulationProvider<T> _populationProvider;
+    private readonly IEvolutionStatsProvider _trainingStatsProvider;
     private readonly IFitnessEvaluator<T> _fitnessEvaluator;
     private readonly IPopulationSelector<T> _populationSelector;
     private readonly int _populationSize;
 
     private List<(float Fitness, IAgent<T> Agent)> _bestPopulation;
-    private List<IAgent<T>> _population;
-    private EvolutionStats _currentStats;
 
-    public EvolutionTrainer(IAgentProvider<T> agentProvider, IFitnessEvaluator<T> fitnessEvaluator, IPopulationSelector<T> populationSelector, int populationSize = 100)
+    public EvolutionTrainer(
+        IPopulationProvider<T> populationProvider,
+        IEvolutionStatsProvider trainingStatsProvider,
+        IFitnessEvaluator<T> fitnessEvaluator,
+        IPopulationSelector<T> populationSelector,
+        int populationSize)
     {
-        _agentProvider = agentProvider;
+        _populationProvider = populationProvider;
+        _trainingStatsProvider = trainingStatsProvider;
         _fitnessEvaluator = fitnessEvaluator;
         _populationSelector = populationSelector;
         _populationSize = populationSize;
 
-        _bestPopulation = new List<(float, IAgent<T>)>();
-        _population = new List<IAgent<T>>();
-
-        // Initialize stats
-        _currentStats = new EvolutionStats(0, 0, 0, 0, TimeSpan.Zero);
-
-        InitializePopulation();
-    }
-
-    private void InitializePopulation()
-    {
-        for (int i = 0; i < _populationSize; i++)
-        {
-            _population.Add(_agentProvider.CreateBaseAgent());
-        }
-
-        _bestPopulation = _population.Select(a => (0f, a)).ToList();
+        _bestPopulation = _populationProvider.Population.Select(a => (0f, a)).ToList();
     }
 
     /// <inheritdoc/>
@@ -52,7 +42,7 @@ public class EvolutionTrainer<T> : IEvolutionTrainer<T>
         // Evaluate and sort population by fitness
         List<(float Fitness, IAgent<T> Agent)> rankedPopulation = new List<(float Fitness, IAgent<T> Agent)>();
 
-        foreach (IAgent<T> agent in _population)
+        foreach (IAgent<T> agent in _populationProvider.Population)
         {
             float fitness = _fitnessEvaluator.Evaluate(agent);
             rankedPopulation.Add((fitness, agent));
@@ -66,15 +56,14 @@ public class EvolutionTrainer<T> : IEvolutionTrainer<T>
 
         // Create next generation
         List<IAgent<T>> elites = _populationSelector.SelectPopulation(_bestPopulation);
-        List<IAgent<T>> nextGeneration = new List<IAgent<T>>();
+        HashSet<IAgent<T>> nextGeneration = new HashSet<IAgent<T>>();
 
         if (elites.Count == 0)
         {
             throw EvolutionException.EmptySelection();
         }
 
-        // Add elites to next generation
-        nextGeneration.AddRange(elites);
+        nextGeneration.UnionWith(elites);
 
         // Fill the rest of the population with mutants
         while (nextGeneration.Count < _populationSize)
@@ -86,17 +75,18 @@ public class EvolutionTrainer<T> : IEvolutionTrainer<T>
             nextGeneration.Add(child);
         }
 
-        _population = nextGeneration;
         stopwatch.Stop();
 
-        int newGeneration = _currentStats.Generation + 1;
+        _populationProvider.Population = nextGeneration;
 
-        _currentStats = new EvolutionStats(
+        int newGeneration = _trainingStatsProvider.GetCurrentStats().Generation + 1;
+        _trainingStatsProvider.Update(new EvolutionStats(
             newGeneration,
             bestFitness,
             (float)averageFitness,
             worstFitness,
-            stopwatch.Elapsed);
+            stopwatch.Elapsed
+        ));
     }
 
     /// <inheritdoc/>
@@ -111,6 +101,6 @@ public class EvolutionTrainer<T> : IEvolutionTrainer<T>
     /// <inheritdoc/>
     public EvolutionStats GetStats()
     {
-        return _currentStats;
+        return _trainingStatsProvider.GetCurrentStats();
     }
 }
