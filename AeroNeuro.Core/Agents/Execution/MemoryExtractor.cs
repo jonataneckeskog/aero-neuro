@@ -1,10 +1,10 @@
 namespace AeroNeuro.Core.Agents.Execution;
 
-public class OutputExtractor : IOutputExtractor<byte, byte[]>
+public class MemoryOutputExtractor : IOutputExtractor<byte, byte[]>
 {
     private readonly int _actionSize;
 
-    public OutputExtractor(int actionSize)
+    public MemoryOutputExtractor(int actionSize)
     {
         _actionSize = actionSize;
     }
