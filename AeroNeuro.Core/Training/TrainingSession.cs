@@ -27,15 +27,24 @@ public class TrainingSession<T>
     /// <param name="generations">Number of generations to evolve.</param>
     public void Run(int generations)
     {
+        var context = new TrainingContext<T>(_trainer, _environment);
+
+        foreach (var hook in _hooks) hook.OnSessionStart(context);
+
         for (int i = 0; i < generations; i++)
         {
+            if (context.ShouldStop) break;
+
+            context.Stats = _trainer.GetStats();
+            foreach (var hook in _hooks) hook.OnGenerationStart(context);
+
             _trainer.EvolveGeneration();
 
-            foreach (var hook in _hooks)
-            {
-                hook.OnGenerationEvolved(_trainer.GetStats(), _trainer, _environment);
-            }
+            context.Stats = _trainer.GetStats();
+            foreach (var hook in _hooks) hook.OnGenerationEnd(context);
         }
+
+        foreach (var hook in _hooks) hook.OnSessionEnd(context);
     }
 
     /// <summary>
@@ -44,20 +53,27 @@ public class TrainingSession<T>
     /// <param name="stopCondition">Function that returns true when training should stop.</param>
     public void RunUntil(Func<EvolutionStats, bool> stopCondition)
     {
-        while (true)
+        var context = new TrainingContext<T>(_trainer, _environment);
+
+        foreach (var hook in _hooks) hook.OnSessionStart(context);
+
+        while (!context.ShouldStop)
         {
+            context.Stats = _trainer.GetStats();
+            foreach (var hook in _hooks) hook.OnGenerationStart(context);
+
             _trainer.EvolveGeneration();
             EvolutionStats stats = _trainer.GetStats();
+            context.Stats = stats;
 
-            foreach (var hook in _hooks)
-            {
-                hook.OnGenerationEvolved(stats, _trainer, _environment);
-            }
+            foreach (var hook in _hooks) hook.OnGenerationEnd(context);
 
             if (stopCondition(stats))
             {
                 break;
             }
         }
+
+        foreach (var hook in _hooks) hook.OnSessionEnd(context);
     }
 }

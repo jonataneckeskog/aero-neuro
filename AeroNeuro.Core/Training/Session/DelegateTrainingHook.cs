@@ -19,11 +19,11 @@ public class DelegateTrainingHook<T> : ITrainingSessionHook<T>
     }
 
     /// <inheritdoc/>
-    public void OnGenerationEvolved(EvolutionStats stats, IEvolutionTrainer<T> trainer, IEnvironment<T>? environment)
+    public void OnGenerationEnd(TrainingContext<T> context)
     {
-        if (_predicate(stats))
+        if (context.Stats != null && _predicate(context.Stats))
         {
-            _action(stats, trainer, environment);
+            _action(context.Stats, context.Trainer, context.Environment);
         }
     }
 }
