@@ -1,5 +1,5 @@
-using AeroNeuro.Core.Agents;
-using AeroNeuro.Core.Training;
+using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Training.Selection;
 using AeroNeuro.Test.Mocks;
 
 namespace AeroNeuro.Test.Training;

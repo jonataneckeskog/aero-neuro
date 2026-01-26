@@ -1,8 +1,8 @@
 using Moq;
-using AeroNeuro.Core.Agents;
-using AeroNeuro.Core.Environments;
-using AeroNeuro.Core.Training;
 using AeroNeuro.Test.Mocks;
+using AeroNeuro.Core.Environments.Abstractions;
+using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Training.Evaluation;
 
 namespace AeroNeuro.Test.Training;
 
