@@ -1,6 +1,11 @@
-using AeroNeuro.Core.Agents;
-using AeroNeuro.Core.Environments;
+using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Environments.Abstractions;
 using AeroNeuro.Core.Training;
+using AeroNeuro.Core.Training.Abstractions;
+using AeroNeuro.Core.Training.Evaluation;
+using AeroNeuro.Core.Training.Selection;
+using AeroNeuro.Core.Training.Session;
+using AeroNeuro.Core.Common;
 
 namespace AeroNeuro.Core;
 
@@ -9,22 +14,13 @@ namespace AeroNeuro.Core;
 /// </summary>
 public class AeroNeuroBuilder<T>
 {
-    private IEnvironment<T>? _environment;
     private IAgentProvider<T>? _agentProvider;
     private IPopulationSelector<T>? _populationSelector;
     private IFitnessEvaluator<T>? _fitnessEvaluator;
-    private IStatsDisplayer? _statsDisplayer;
-    private int _populationSize = 100;
+    private int _populationSize = 0;
+    private IEvolutionStatsProvider? _statsProvider;
+    private IPopulationProvider<T>? _populationProvider;
     private readonly List<ITrainingSessionHook<T>> _hooks = new();
-
-    /// <summary>
-    /// Sets the environment for the agents.
-    /// </summary>
-    public AeroNeuroBuilder<T> WithEnvironment(IEnvironment<T> environment)
-    {
-        _environment = environment;
-        return this;
-    }
 
     /// <summary>
     /// Sets the agent provider for creating agents.
@@ -36,7 +32,7 @@ public class AeroNeuroBuilder<T>
     }
 
     /// <summary>
-    /// Sets the population selector. Defaults to null.
+    /// Sets the population selector.
     /// </summary>
     public AeroNeuroBuilder<T> WithPopulationSelector(IPopulationSelector<T> selector)
     {
@@ -45,11 +41,38 @@ public class AeroNeuroBuilder<T>
     }
 
     /// <summary>
-    /// Sets a custom fitness evaluator. If not set, a TrainingFitnessEvaluator will be created using the Environment.
+    /// Sets a custom fitness evaluator.
     /// </summary>
     public AeroNeuroBuilder<T> WithFitnessEvaluator(IFitnessEvaluator<T> evaluator)
     {
         _fitnessEvaluator = evaluator;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the population size.
+    /// </summary>
+    public AeroNeuroBuilder<T> WithPopulationSize(int size)
+    {
+        _populationSize = size;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the stats provider.
+    /// </summary>
+    public AeroNeuroBuilder<T> WithStatsProvider(IEvolutionStatsProvider statsProvider)
+    {
+        _statsProvider = statsProvider;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the population provider.
+    /// </summary>
+    public AeroNeuroBuilder<T> WithPopulationProvider(IPopulationProvider<T> populationProvider)
+    {
+        _populationProvider = populationProvider;
         return this;
     }
 
@@ -63,75 +86,28 @@ public class AeroNeuroBuilder<T>
     }
 
     /// <summary>
-    /// Adds a conditional action to be executed during training.
-    /// </summary>
-    public AeroNeuroBuilder<T> WithConditionalAction(Func<EvolutionStats, bool> predicate, Action<EvolutionStats, IEvolutionTrainer<T>, IEnvironment<T>?> action)
-    {
-        _hooks.Add(new DelegateTrainingHook<T>(predicate, action));
-        return this;
-    }
-
-    /// <summary>
-    /// Adds a conditional action that interacts with the environment.
-    /// </summary>
-    public AeroNeuroBuilder<T> WithConditionalAction(Func<EvolutionStats, bool> predicate, Action<IEnvironment<T>> action)
-    {
-        return WithConditionalAction(predicate, (stats, trainer, env) =>
-        {
-            if (env is not null)
-            {
-                action(env);
-            }
-        });
-    }
-
-    /// <summary>
-    /// Adds a conditional action that interacts with the trainer.
-    /// </summary>
-    public AeroNeuroBuilder<T> WithConditionalAction(Func<EvolutionStats, bool> predicate, Action<IEvolutionTrainer<T>> action)
-    {
-        return WithConditionalAction(predicate, (stats, trainer, env) => action(trainer));
-    }
-
-    /// <summary>
-    /// Sets the stats displayer.
-    /// </summary>
-    /// <param name="statsDisplayer"></param>
-    /// <returns></returns>
-    public AeroNeuroBuilder<T> WithStatsDisplayer(IStatsDisplayer statsDisplayer)
-    {
-        _statsDisplayer = statsDisplayer;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the population size. Default is 100.
-    /// </summary>
-    public AeroNeuroBuilder<T> WithPopulationSize(int size)
-    {
-        _populationSize = size;
-        return this;
-    }
-
-    /// <summary>
-    /// Builds the training session with the configured components.
+    /// Builds the training session with the configured components. Crashes if mandatory
+    /// components are not set.
     /// </summary>
     public TrainingSession<T> Build()
     {
-        if (_environment is null || _agentProvider is null
-            || _populationSelector is null || _fitnessEvaluator is null
-            || _statsDisplayer is null)
+        if (_agentProvider is null
+            || _populationSelector is null || _fitnessEvaluator is null ||
+            _populationSize == 0 || _statsProvider is null || _populationProvider is null)
         {
             throw new InvalidOperationException("Missing mandatory components.");
         }
 
         IEvolutionTrainer<T> trainer = new EvolutionTrainer<T>(
-            _agentProvider,
+            _populationProvider,
+            _statsProvider,
             _fitnessEvaluator,
             _populationSelector,
             _populationSize
         );
 
-        return new TrainingSession<T>(trainer, _statsDisplayer, _environment, _hooks);
+        TrainingContext<T> trainingContext = new TrainingContext<T>(_populationProvider, _statsProvider);
+
+        return new TrainingSession<T>(trainer, trainingContext, _hooks);
     }
 }

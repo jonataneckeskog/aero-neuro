@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\AeroNeuro.Core\AeroNeuro.Core.csproj" />
+    <ProjectReference Include="../AeroNeuro.Core/AeroNeuro.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

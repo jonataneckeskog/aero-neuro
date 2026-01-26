@@ -1,8 +1,12 @@
 using Moq;
-using AeroNeuro.Core.Agents;
+using AeroNeuro.Core.Agents.Abstractions;
 using AeroNeuro.Core.Training;
 using AeroNeuro.Test.Mocks;
 using AeroNeuro.Core.Exceptions;
+using AeroNeuro.Core.Training.Evaluation;
+using AeroNeuro.Core.Training.Selection;
+using AeroNeuro.Core.Training;
+using AeroNeuro.Core.Common;
 
 namespace AeroNeuro.Test.Training;
 

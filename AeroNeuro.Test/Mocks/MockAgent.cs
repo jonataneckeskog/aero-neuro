@@ -1,5 +1,5 @@
 using Moq;
-using AeroNeuro.Core.Agents;
+using AeroNeuro.Core.Agents.Abstractions;
 
 namespace AeroNeuro.Test.Mocks;
 

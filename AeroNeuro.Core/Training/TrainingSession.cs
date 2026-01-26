@@ -1,6 +1,7 @@
-using AeroNeuro.Core.Environments;
+using AeroNeuro.Core.Common;
+using AeroNeuro.Core.Training.Abstractions;
 
-namespace AeroNeuro.Core.Training;
+namespace AeroNeuro.Core.Training.Session;
 
 /// <summary>
 /// Orchestrates the training process using an evolution trainer.
@@ -8,16 +9,15 @@ namespace AeroNeuro.Core.Training;
 public class TrainingSession<T>
 {
     private readonly IEvolutionTrainer<T> _trainer;
-    private readonly IStatsDisplayer _statsDisplayer;
-    private readonly IEnvironment<T>? _environment;
+    private readonly TrainingContext<T> _context;
     private readonly IEnumerable<ITrainingSessionHook<T>> _hooks;
 
-    public TrainingSession(IEvolutionTrainer<T> trainer, IStatsDisplayer statsDisplayer,
-        IEnvironment<T>? environment, IEnumerable<ITrainingSessionHook<T>> hooks)
+    public TrainingSession(IEvolutionTrainer<T> trainer,
+        TrainingContext<T> context,
+        IEnumerable<ITrainingSessionHook<T>> hooks)
     {
         _trainer = trainer;
-        _statsDisplayer = statsDisplayer;
-        _environment = environment;
+        _context = context;
         _hooks = hooks ?? new List<ITrainingSessionHook<T>>();
     }
 
@@ -27,16 +27,20 @@ public class TrainingSession<T>
     /// <param name="generations">Number of generations to evolve.</param>
     public void Run(int generations)
     {
+        foreach (var hook in _hooks) hook.OnSessionStart(_context);
+
         for (int i = 0; i < generations; i++)
         {
-            _trainer.EvolveGeneration();
-            _statsDisplayer.DisplayStats(_trainer.GetStats());
+            if (_context.ShouldStop) break;
 
-            foreach (var hook in _hooks)
-            {
-                hook.OnGenerationEvolved(_trainer.GetStats(), _trainer, _environment);
-            }
+            foreach (var hook in _hooks) hook.OnGenerationStart(_context);
+
+            _trainer.EvolveGeneration();
+
+            foreach (var hook in _hooks) hook.OnGenerationEnd(_context);
         }
+
+        foreach (var hook in _hooks) hook.OnSessionEnd(_context);
     }
 
     /// <summary>
@@ -45,21 +49,23 @@ public class TrainingSession<T>
     /// <param name="stopCondition">Function that returns true when training should stop.</param>
     public void RunUntil(Func<EvolutionStats, bool> stopCondition)
     {
-        while (true)
+        foreach (var hook in _hooks) hook.OnSessionStart(_context);
+
+        while (!_context.ShouldStop)
         {
+            foreach (var hook in _hooks) hook.OnGenerationStart(_context);
+
             _trainer.EvolveGeneration();
             EvolutionStats stats = _trainer.GetStats();
-            _statsDisplayer.DisplayStats(stats);
 
-            foreach (var hook in _hooks)
-            {
-                hook.OnGenerationEvolved(stats, _trainer, _environment);
-            }
+            foreach (var hook in _hooks) hook.OnGenerationEnd(_context);
 
             if (stopCondition(stats))
             {
                 break;
             }
         }
+
+        foreach (var hook in _hooks) hook.OnSessionEnd(_context);
     }
 }
