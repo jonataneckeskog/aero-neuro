@@ -16,8 +16,6 @@ public class EvolutionTrainer<T> : IEvolutionTrainer<T>
     private readonly IPopulationSelector<T> _populationSelector;
     private readonly int _populationSize;
 
-    private List<(float Fitness, IAgent<T> Agent)> _bestPopulation;
-
     public EvolutionTrainer(
         IPopulationProvider<T> populationProvider,
         IEvolutionStatsProvider trainingStatsProvider,
@@ -30,8 +28,6 @@ public class EvolutionTrainer<T> : IEvolutionTrainer<T>
         _fitnessEvaluator = fitnessEvaluator;
         _populationSelector = populationSelector;
         _populationSize = populationSize;
-
-        _bestPopulation = _populationProvider.Population.Select(a => (0f, a)).ToList();
     }
 
     /// <inheritdoc/>
@@ -48,14 +44,14 @@ public class EvolutionTrainer<T> : IEvolutionTrainer<T>
             rankedPopulation.Add((fitness, agent));
         }
 
-        _bestPopulation = rankedPopulation.OrderByDescending(x => x.Fitness).ToList();
+        _populationProvider.RankedPopulation = rankedPopulation.OrderByDescending(x => x.Fitness).ToList();
 
-        float bestFitness = _bestPopulation.First().Fitness;
-        float worstFitness = _bestPopulation.Last().Fitness;
-        double averageFitness = _bestPopulation.Average(x => x.Fitness);
+        float bestFitness = _populationProvider.RankedPopulation.First().Fitness;
+        float worstFitness = _populationProvider.RankedPopulation.Last().Fitness;
+        double averageFitness = _populationProvider.RankedPopulation.Average(x => x.Fitness);
 
         // Create next generation
-        List<IAgent<T>> elites = _populationSelector.SelectPopulation(_bestPopulation);
+        List<IAgent<T>> elites = _populationSelector.SelectPopulation(_populationProvider.RankedPopulation);
         HashSet<IAgent<T>> nextGeneration = new HashSet<IAgent<T>>();
 
         if (elites.Count == 0)
@@ -92,7 +88,7 @@ public class EvolutionTrainer<T> : IEvolutionTrainer<T>
     /// <inheritdoc/>
     public List<IAgent<T>> GetBestAgents(int count)
     {
-        return _bestPopulation
+        return _populationProvider.RankedPopulation
             .Take(count)
             .Select(x => x.Agent)
             .ToList();

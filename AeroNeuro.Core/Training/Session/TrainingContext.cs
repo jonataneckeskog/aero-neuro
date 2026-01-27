@@ -18,7 +18,7 @@ public class TrainingContext<T>
     /// <summary>
     /// Dynamically fetches the current population from the provider.
     /// </summary>
-    public IEnumerable<IInspectableAgent> Population => _populationProvider.GetInspectablePopulation();
+    public IEnumerable<(float Fitness, IInspectableAgent Agent)> Population => _populationProvider.GetInspectablePopulation();
 
     /// <summary>
     /// Critical stats from the evolution process.

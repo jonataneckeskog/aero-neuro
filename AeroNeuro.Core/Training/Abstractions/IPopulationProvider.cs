@@ -14,6 +14,11 @@ public interface IPopulationProvider<T>
     HashSet<IAgent<T>> Population { get; set; }
 
     /// <summary>
+    /// The previous ranked population, indexed by fitness.
+    /// </summary>
+    List<(float Fitness, IAgent<T> Agent)> RankedPopulation { get; set; }
+
+    /// <summary>
     /// The size of the current population.
     /// </summary>
     int PopulationSize { get; set; }
@@ -21,5 +26,5 @@ public interface IPopulationProvider<T>
     /// <summary>
     /// Utility to get the population in a read-only format for UI or logging.
     /// </summary>
-    IEnumerable<IInspectableAgent> GetInspectablePopulation();
+    IEnumerable<(float Fitness, IInspectableAgent Agent)> GetInspectablePopulation();
 }

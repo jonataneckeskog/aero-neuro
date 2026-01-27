@@ -35,13 +35,13 @@ public class GenomeAgentProvider : IAgentProvider<byte>
     public IAgent<byte> CreateBaseAgent()
     {
         return new GenomeAgent(
-            _mutationStrategy,
-            _outputExtractor,
-            _programExecutor,
-            _agentTopology.InputCount,
-            _networkSize,
-            _memorySize,
-            _maxNetworkSize
+            mutationStrategy: _mutationStrategy,
+            outputExtractor: _outputExtractor,
+            programExecutor: _programExecutor,
+            inputSize: _agentTopology.InputCount,
+            networkSize: _networkSize,
+            memorySize: _memorySize,
+            maxNetworkSize: _maxNetworkSize
             );
     }
 
@@ -51,10 +51,10 @@ public class GenomeAgentProvider : IAgentProvider<byte>
         int networkSize = ThreadSafeRandom.Instance.Next(minNodes, maxNodes);
 
         IAgent<byte> agent = new GenomeAgent(
-            _mutationStrategy,
-            _outputExtractor,
-            _programExecutor,
-            _agentTopology.InputCount,
+            mutationStrategy: _mutationStrategy,
+            outputExtractor: _outputExtractor,
+            programExecutor: _programExecutor,
+            inputSize: _agentTopology.InputCount,
             networkSize: networkSize,
             memorySize: (int)BitOperations.RoundUpToPowerOf2(
                 (uint)Math.Max(networkSize, Math.Max(_agentTopology.InputCount,
