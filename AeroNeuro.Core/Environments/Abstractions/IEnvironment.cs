@@ -23,6 +23,13 @@ public interface IEnvironment<T>
     T[] GetObservation();
 
     /// <summary>
+    /// Can be implemented in syncrony with Step to separate agents actions from
+    /// their evaluation.
+    /// </summary>
+    /// <param name="actions"></param>
+    void Act(T[] actions) { }
+
+    /// <summary>
     /// Apply the given actions to the environment and advance its state.
     /// Returns the reward obtained after taking the actions.
     /// </summary>

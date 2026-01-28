@@ -35,23 +35,19 @@ public class EvolutionTrainer<T> : IEvolutionTrainer<T>
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
 
-        // Evaluate and sort population by fitness
-        List<(float Fitness, IAgent<T> Agent)> rankedPopulation = new List<(float Fitness, IAgent<T> Agent)>();
+        _fitnessEvaluator.EvaluatePopulation(_populationProvider);
+        var rankedPop = _populationProvider.RankedPopulation;
 
-        foreach (IAgent<T> agent in _populationProvider.Population)
+        if (rankedPop == null || rankedPop.Count == 0)
         {
-            float fitness = _fitnessEvaluator.Evaluate(agent);
-            rankedPopulation.Add((fitness, agent));
+            throw new InvalidOperationException("Evaluation failed to produce a ranked population.");
         }
 
-        _populationProvider.RankedPopulation = rankedPopulation.OrderByDescending(x => x.Fitness).ToList();
+        float bestFitness = rankedPop[0].Fitness;
+        float worstFitness = rankedPop[rankedPop.Count - 1].Fitness;
+        double averageFitness = rankedPop.Average(x => x.Fitness);
 
-        float bestFitness = _populationProvider.RankedPopulation.First().Fitness;
-        float worstFitness = _populationProvider.RankedPopulation.Last().Fitness;
-        double averageFitness = _populationProvider.RankedPopulation.Average(x => x.Fitness);
-
-        // Create next generation
-        List<IAgent<T>> elites = _populationSelector.SelectPopulation(_populationProvider.RankedPopulation);
+        List<IAgent<T>> elites = _populationSelector.SelectPopulation(rankedPop);
         HashSet<IAgent<T>> nextGeneration = new HashSet<IAgent<T>>();
 
         if (elites.Count == 0)
@@ -61,10 +57,10 @@ public class EvolutionTrainer<T> : IEvolutionTrainer<T>
 
         nextGeneration.UnionWith(elites);
 
-        // Fill the rest of the population with mutants
         while (nextGeneration.Count < _populationSize)
         {
             IAgent<T> parent = elites[nextGeneration.Count % elites.Count];
+
             IAgent<T> child = parent.Clone();
             child.Mutate();
 

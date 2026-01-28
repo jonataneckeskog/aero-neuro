@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using AeroNeuro.Core.Agents.Abstractions;
 using AeroNeuro.Core.Environments.Abstractions;
+using AeroNeuro.Core.Training.Abstractions;
 
 namespace AeroNeuro.Core.Training.Evaluation;
 
@@ -23,30 +24,65 @@ public class TrainingFitnessEvaluator<T> : IFitnessEvaluator<T>
     }
 
     /// <inheritdoc/>
-    public float Evaluate(IAgent<T> agent)
+    public void EvaluatePopulation(IPopulationProvider<T> populationProvider)
     {
-        float totalFitness = 0;
+        var agents = populationProvider.Population;
+        if (agents == null || agents.Count == 0) return;
+
+        // Temporary storage for this evaluation run
+        var fitnessScores = agents.ToDictionary(a => a, _ => 0f);
+
         long startTimestamp = Stopwatch.GetTimestamp();
 
         for (int e = 0; e < _episodes; e++)
         {
             _environment.Reset();
-            float episodeReward = 0;
-            int i = 0;
-            while (!_environment.IsDone && i < _maxSteps)
+            int step = 0;
+
+            while (!_environment.IsDone && step < _maxSteps)
             {
                 T[] observation = _environment.GetObservation();
-                T[] actions = agent.Decide(observation);
-                episodeReward += _environment.Step(actions);
-                i++;
+
+                // Map to store actions for the current frame so we can Act first, then Step later
+                var currentFrameActions = new Dictionary<IAgent<T>, T[]>(agents.Count);
+
+                // --- PHASE 1: DECIDE & ACT ---
+                // All agents declare their intentions first
+                foreach (var agent in agents)
+                {
+                    T[] action = agent.Decide(observation);
+                    currentFrameActions[agent] = action;
+                    _environment.Act(action);
+                }
+
+                // --- PHASE 2: STEP & EVALUATE ---
+                // Now resolve the consequences for each agent
+                foreach (var kvp in currentFrameActions)
+                {
+                    var agent = kvp.Key;
+                    var action = kvp.Value;
+
+                    float reward = _environment.Step(action);
+                    fitnessScores[agent] += reward * (e + 1);
+                }
+
+                step++;
             }
-            totalFitness += episodeReward * (e + 1);
         }
 
+        // --- PHASE 3: FINALIZE & RANK ---
         long endTimestamp = Stopwatch.GetTimestamp();
         double elapsedSeconds = Stopwatch.GetElapsedTime(startTimestamp, endTimestamp).TotalSeconds;
         float timePenalty = (float)(elapsedSeconds * _timeWeight);
 
-        return totalFitness - timePenalty;
+        // Create the new ranked list by mapping agents to their calculated scores
+        populationProvider.RankedPopulation = agents
+            .Select(agent =>
+            {
+                float finalFitness = fitnessScores[agent] - timePenalty;
+                return (Fitness: finalFitness, Agent: agent);
+            })
+            .OrderByDescending(x => x.Fitness)
+            .ToList();
     }
 }
