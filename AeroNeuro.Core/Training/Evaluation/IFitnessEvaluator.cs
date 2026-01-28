@@ -1,4 +1,4 @@
-using AeroNeuro.Core.Agents.Abstractions;
+using AeroNeuro.Core.Training.Abstractions;
 
 namespace AeroNeuro.Core.Training.Evaluation;
 
@@ -8,7 +8,8 @@ namespace AeroNeuro.Core.Training.Evaluation;
 public interface IFitnessEvaluator<T>
 {
     /// <summary>
-    /// Evaluate fitness of an agent. Higher = better.
+    /// Evaluates a population of agents. 
+    /// This allows for batch processing or competitive evaluation (e.g. Tournaments).
     /// </summary>
-    float Evaluate(IAgent<T> agent);
+    void EvaluatePopulation(IPopulationProvider<T> populationProvider);
 }
