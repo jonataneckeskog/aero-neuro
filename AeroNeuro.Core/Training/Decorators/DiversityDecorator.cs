@@ -1,7 +1,7 @@
 using AeroNeuro.Core.Environments.Abstractions;
 using AeroNeuro.Core.Training.Abstractions;
 
-namespace AeroNeuro.Core.Environments.Decorators;
+namespace AeroNeuro.Core.Training.Decorators;
 
 public class DiversityDecorator<T> : IEnvironment<T>
 {
