@@ -6,7 +6,6 @@ namespace AeroNeuro.Core.Training.Decorators;
 public class DiversityDecorator<T> : IEnvironment<T>
 {
     private readonly IEnvironment<T> _environment;
-    private readonly IPopulationProvider<T> _populationProvider;
 
     // We only care about Crowding. 
     private const float CrowdingPenaltyWeight = 0.5f;
@@ -15,10 +14,9 @@ public class DiversityDecorator<T> : IEnvironment<T>
     private readonly int[] _buckets;
     private readonly int _bucketCount;
 
-    public DiversityDecorator(IEnvironment<T> environment, IPopulationProvider<T> populationProvider)
+    public DiversityDecorator(IEnvironment<T> environment)
     {
         _environment = environment;
-        _populationProvider = populationProvider;
 
         // Create buckets to map the Action Space (0.0 to 1.0)
         _bucketCount = (int)Math.Ceiling(1.0f / CrowdingRadius);
